@@ -74,7 +74,7 @@ void StorageBuffer<T>::Allocate(unsigned int count, unsigned int bindingP, T* da
 	glGenBuffers(1, &storageBuffer);
 	bindingPoint = bindingP;
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, storageBuffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(T) * count, data, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(T) * count, data, GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, storageBuffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
@@ -91,7 +91,7 @@ template <class T>
 void StorageBuffer<T>::Copy(T* data)
 {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, storageBuffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(T) * elementCount, data, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(T) * elementCount, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 

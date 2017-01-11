@@ -22,8 +22,8 @@ namespace RenderEngine
  
 struct AABB
 {
-	float min[4];
-	float max[4];
+	float min[3];
+	float max[3];
 };
 
 
