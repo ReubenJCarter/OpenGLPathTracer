@@ -260,6 +260,7 @@ const std::string shaderSrc = ""
 "		vec3 materialEmittance;"
 "		vec3 materialReflectance;"
 "		RayIntersectBVH(rayOrig, rayDir, triangleIndex, hit);"
+"		Triangle tri; "
 "		if(triangleIndex < 0)"
 "		{"
 "			vec4 backgroundTex = textureLod(backgroundCube, rayDir, 0);"
@@ -269,31 +270,37 @@ const std::string shaderSrc = ""
 "		}"
 "		else"
 "		{"
-"			materialEmittance = materials[triangles[triangleIndex].mat].emission.xyz;"
-"			materialReflectance = materials[triangles[triangleIndex].mat].reflectance.xyz;"
+"			tri = triangles[triangleIndex];"
+"			Material mat = materials[tri.mat];"
+"			materialEmittance = mat.emission.xyz;"
+"			materialReflectance = mat.reflectance.xyz;"
+
+"			Vertex vertA = verticies[tri.a];"
+"			Vertex vertB = verticies[tri.b];"
+"			Vertex vertC = verticies[tri.c];"
+
+"			vec3 norma = vertA.norm.xyz;"	
+"			vec3 normb = vertB.norm.xyz;"
+"			vec3 normc = vertC.norm.xyz;"
+"			vec3 norm = vec3(norma * hit.x + normb * hit.y + normc * hit.z);"
+
+"			vec3 posa = vertA.pos.xyz;"
+"			vec3 posb = vertB.pos.xyz;"
+"			vec3 posc = vertC.pos.xyz;"
+"			vec3 pos = vec3(posa * hit.x + posb * hit.y + posc * hit.z);"
+
+"			vec3 newRayO = pos;"
+"			vec3 newRayD = RandomUnitHemi(Random(fragCoord, randNum[i]), norm);"
+
+"			vec3 BRDF = 2.0f * materialReflectance * max(0.0f, dot(newRayD, norm));"
+
+"			finalColor += runningBRDF * materialEmittance;"
+
+"			runningBRDF *= BRDF;"
+
+"			rayOrig = newRayO;"
+"			rayDir = newRayD;"
 "		}"
-
-"		vec3 norma = verticies[triangles[triangleIndex].a].norm.xyz;"	
-"		vec3 normb = verticies[triangles[triangleIndex].b].norm.xyz;"
-"		vec3 normc = verticies[triangles[triangleIndex].c].norm.xyz;"
-"		vec3 norm = vec3(norma * hit.x + normb * hit.y + normc * hit.z);"
-
-"		vec3 posa = verticies[triangles[triangleIndex].a].pos.xyz;"
-"		vec3 posb = verticies[triangles[triangleIndex].b].pos.xyz;"
-"		vec3 posc = verticies[triangles[triangleIndex].c].pos.xyz;"
-"		vec3 pos = vec3(posa * hit.x + posb * hit.y + posc * hit.z);"
-
-"		vec3 newRayO = pos;"
-"		vec3 newRayD = RandomUnitHemi(Random(fragCoord, randNum[i]), norm);"
-
-"		vec3 BRDF = 2.0f * materialReflectance * max(0.0f, dot(newRayD, norm));"
-
-"		finalColor += runningBRDF * materialEmittance;"
-
-"		runningBRDF *= BRDF;"
-
-"		rayOrig = newRayO;"
-"		rayDir = newRayD;"
 
 "	}"
 "	vec4 imageCurrentColor = imageLoad(outputImage, storePos);"
