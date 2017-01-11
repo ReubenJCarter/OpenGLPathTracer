@@ -28,7 +28,8 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Loaded scene file" << std::endl;
 	
-	scene.RebuildBVH();
+	scene.RebuildBVH(32);
+	scene.bvh.ToFile("test.bvh");
 	
 	std::cout << "Rebuilt BVH" << std::endl;
 	
