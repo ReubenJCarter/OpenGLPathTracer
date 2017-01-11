@@ -1,0 +1,5 @@
+#build folder
+build/
+release/
+dist/
+vendor/
