@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <time.h>  
 
@@ -37,19 +38,27 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Allocated GPU Buffers" << std::endl;
 	
-	Renderer renderer(size, size, 4);
+	Renderer renderer(size, size, 3);
 	
 	std::cout << "Created renderer" << std::endl;
 	
 	QuadImage quadImage(size, size);
 	
 	//BUNNY
-	//scene.camera.position = glm::vec3(-0.05f, 0.1f, 0.17f);
-	//scene.camera.rotation = glm::vec3(0.0f, 3.141f, 0.0f);
-	
+	scene.camera.position = glm::vec3(-0.05f, 0.1f, 0.17f);
+	scene.camera.rotation = glm::vec3(0.0f, 3.141f, 0.0f);
 	//DRAGON
-	scene.camera.position = glm::vec3(0.0f, 3.0f, -10.0f);
-	scene.camera.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	//scene.camera.position = glm::vec3(0.0f, 3.0f, -10.0f);
+	//scene.camera.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	
+	if(argc >= 8)
+	{
+		std::stringstream ss;
+		ss << argv[2] << " " << argv[3] << " " << argv[4] << " ";
+		ss << argv[5] << " " << argv[6] << " " << argv[7] << " ";
+		ss >> scene.camera.position.x >> scene.camera.position.y >> scene.camera.position.z;
+		ss >> scene.camera.rotation.x >> scene.camera.rotation.y >> scene.camera.rotation.z;
+	}
 	
 	int sampleCount = 1;
 	while(true)
