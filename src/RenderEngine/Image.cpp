@@ -28,7 +28,7 @@ void Image::Init()
 {
 	ilInit();
 	ilEnable(IL_ORIGIN_SET);
-	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+	ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
 	inited = true;
 }
 	

@@ -47,6 +47,7 @@ int main(int argc, char* argv[])
 	//BUNNY
 	scene.camera.position = glm::vec3(-0.05f, 0.1f, 0.17f);
 	scene.camera.rotation = glm::vec3(0.0f, 3.141f, 0.0f);
+	scene.camera.fov = 1.1;
 	//DRAGON
 	//scene.camera.position = glm::vec3(0.0f, 3.0f, -10.0f);
 	//scene.camera.rotation = glm::vec3(0.0f, 0.0f, 0.0f);

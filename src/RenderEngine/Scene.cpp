@@ -128,7 +128,7 @@ bool Scene::BackgroundCubeImageFromFile(std::string fileName[6])
 		height = h;
 	}
 	
-	backgroundCubeTexture.Allocate(width, height, GLComputeHelper::Texture::CUBE_MAP, GLComputeHelper::Texture::RGBA8);
+	backgroundCubeTexture.Allocate(width, height, GLComputeHelper::Texture::CUBE_MAP, GLComputeHelper::Texture::RGBA8, NULL, GLComputeHelper::Texture::CLAMP_TO_EDGE);
 	backgroundCubeTexture.CopyCube(backgroundCubeImages[0].Data(), backgroundCubeImages[1].Data(), backgroundCubeImages[2].Data(),
 								   backgroundCubeImages[3].Data(), backgroundCubeImages[4].Data(), backgroundCubeImages[5].Data());
 }

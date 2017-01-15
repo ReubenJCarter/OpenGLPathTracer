@@ -3,6 +3,7 @@
 #include <time.h>  
 #include <math.h>
 #include <stdio.h>
+#include <iostream>
 #include <chrono>
 #include <random>
 #include "ShaderCommon.h"
@@ -24,111 +25,7 @@ namespace RenderEngine
  *Renderer Class
  *
  */
- 
-/*
-const std::string shaderSrc = ""
-"layout(rgba32f) uniform image2D outputImage;"
 
-"layout (std430) buffer verticiesSB"
-"{"
-"	Vertex verticies[];"
-"};"
-
-"layout (std430) buffer trianglesSB"
-"{"
-"	Triangle triangles[];"
-"};"
-
-"layout (std430) buffer bvhSB"
-"{"
-"	BVHNode bvh[];"
-"};"
-
-"uniform int triangleCount;"
-"uniform int nodeCount;"
-"uniform float randTime0;"
-"uniform float randTime1;"
-"uniform int bounceCount;"
-"uniform vec3 pointLightPosition;"
-"uniform vec3 pointLightColor;"
-
-"void RayIntersectBVH(vec3 rayOrig, vec3 rayDir, out int triIndex, out vec4 hit)"
-"{"
-"	float dist = 1e10;"
-"	int nodeIndex = 0;"
-"	triIndex = -1;"
-"	while(nodeIndex < nodeCount)"
-"	{"
-"		vec3 minaabb = bvh[nodeIndex].min.xyz;"
-"		vec3 maxaabb = bvh[nodeIndex].max.xyz;"
-"		int triangleIndexOffset = bvh[nodeIndex].offsetAndSize.x;"
-"		int nodeSize = bvh[nodeIndex].offsetAndSize.y;"
-"		if(RayIntersectBox(rayOrig, rayDir, minaabb, maxaabb, dist))"
-"		{"
-"			if(!(triangleIndexOffset < 0))"
-"			{"
-"				for(int i = triangleIndexOffset; i < triangleIndexOffset + nodeSize; i++)"
-"				{"
-"					vec3 a = verticies[triangles[i].a].pos.xyz;"
-"					vec3 b = verticies[triangles[i].b].pos.xyz;"
-"					vec3 c = verticies[triangles[i].c].pos.xyz;"
-"					vec4 h;"
-"					if(RayIntersectTri(rayOrig, rayDir, a, b, c, h, dist))"
-"					{"
-"						dist = h.w;"
-"						triIndex = i;"
-"						hit = h;"
-"					}"
-"				}"
-"			}"
-"			nodeIndex++;"
-"		}"
-"		else"
-"		{"
-"			nodeIndex += triangleIndexOffset < 0 ? nodeSize : 1;"
-"		}"
-"	}"
-"}"
-
-"layout (local_size_x = 16, local_size_y = 16, local_size_z = 1) in;"
-"void main()"
-"{"
-"	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);"
-"	vec3 avColor = vec3(0, 0, 0);"
-"	vec3 rayDir = normalize(vec3(2.0f * float(gl_GlobalInvocationID.x) / 512.0f - 1.0f, 2.0f * float(gl_GlobalInvocationID.y) / 512.0f - 1.0f, -1.0f));"
-"	vec3 rayOrig = vec3(0.0f, 0.1f, 0.2f);"
-"	vec3 runningBRDF = vec3(1.0f, 1.0f, 1.0f);"
-"	int triangleIndex;"
-"	vec4 hit;"
-"	RayIntersectBVH(rayOrig, rayDir, triangleIndex, hit);"
-"	if(triangleIndex >= 0){"
-"		vec3 norma = verticies[triangles[triangleIndex].a].norm.xyz;"	
-"		vec3 normb = verticies[triangles[triangleIndex].b].norm.xyz;"
-"		vec3 normc = verticies[triangles[triangleIndex].c].norm.xyz;"
-"		vec3 norm = vec3(norma * hit.x + normb * hit.y + normc * hit.z);"
-
-"		vec3 posa = verticies[triangles[triangleIndex].a].pos.xyz;"
-"		vec3 posb = verticies[triangles[triangleIndex].b].pos.xyz;"
-"		vec3 posc = verticies[triangles[triangleIndex].c].pos.xyz;"
-"		vec3 pos = vec3(posa * hit.x + posb * hit.y + posc * hit.z);"
-
-"		vec4 lightHit;"
-"		int tirangleIndexLight;"
-"		RayIntersectBVH(pointLightPosition, normalize(pos - pointLightPosition), tirangleIndexLight, lightHit);"
-"		if(tirangleIndexLight == triangleIndex && tirangleIndexLight != -1)"
-"		{"
-"			float lightDist = length(pointLightPosition - pos);"
-"			float lightCosTheta = max(0.0f, dot(norm, normalize(pointLightPosition - pos)));"
-"			vec3 BRDFLight = 2.0f * pointLightColor * lightCosTheta * (1 / (lightDist * lightDist));"
-"			avColor = runningBRDF * BRDFLight;"
-"		}"
-"		imageStore(outputImage, storePos, vec4(avColor, 1.0f));"
-"	}"
-"	else {"
-"		imageStore(outputImage, storePos, vec4(0.0f, 0.0f, 0.0f, 1.0f));"
-"	}"
-"}"
-;*/
 
 const std::string shaderSrc = ""
 "layout(rgba32f) uniform image2D outputImage;"
@@ -174,9 +71,10 @@ const std::string shaderSrc = ""
 "	float dist = 1e10;"
 "	int nodeIndex = 0;"
 "	triIndex = -1;"
+"	BVHNode node;"
 "	while(nodeIndex < nodeCount)"
 "	{"
-"		BVHNode node = bvh[nodeIndex];"
+"		node = bvh[nodeIndex];"
 //"		vec3 minaabb = node.min.xyz;"
 //"		vec3 maxaabb = node.max.xyz;"
 //"		int triangleIndexOffset = node.offsetAndSize.x;"
@@ -184,10 +82,11 @@ const std::string shaderSrc = ""
 "		vec3 minaabb = vec3(node.minX, node.minY, node.minZ);"
 "		vec3 maxaabb = vec3(node.maxX, node.maxY, node.maxZ);"
 "		int triangleIndexOffset = node.offs;"
+"		bool isLeaf = triangleIndexOffset >= 0;"
 "		int nodeSize = node.sz;"
 "		if(RayIntersectBox(rayOrig, rayDirInv, minaabb, maxaabb, dist))"
 "		{"
-"			if(triangleIndexOffset >= 0)"
+"			if(isLeaf)"
 "			{"
 "				for(int i = triangleIndexOffset; i < triangleIndexOffset + nodeSize; i++)"
 "				{"
@@ -204,19 +103,12 @@ const std::string shaderSrc = ""
 "					}"
 "				}"
 "			}"
-"			nodeIndex++;"
 "		}"
-"		else"
+"		else if(!isLeaf)"
 "		{"
-"			if(triangleIndexOffset >= 0)"
-"			{"
-"				nodeIndex++;"
-"			}"
-"			else"
-"			{"
-"				nodeIndex += nodeSize;"
-"			}"
+"			nodeIndex += nodeSize;"
 "		}"
+"		nodeIndex++;"
 "	}"
 "}"
 
@@ -340,6 +232,8 @@ void Renderer::SetMaxBounce(int b)
 
 void Renderer::Render(Scene& scene)
 {
+	clock_t t = clock();
+	
 	renderShader.SetStorageBuffer<Vertex>("verticiesSB", scene.verticiesSB);
 	renderShader.SetStorageBuffer<Triangle>("trianglesSB", scene.trianglesSB);
 	renderShader.SetStorageBuffer<BVH::BVHNode>("bvhSB", scene.bvhSB);
@@ -373,10 +267,14 @@ void Renderer::Render(Scene& scene)
 	
 	int targetSize[] = {shaderImage.GetWidth(), shaderImage.GetHeight()};
 	renderShader.SetInt2("targetSize", targetSize);
+	t = clock() - t; 
+	std::cout << "Kernel setup time:" << (double)t/CLOCKS_PER_SEC << std::endl;
 	
+	t = clock();
 	renderShader.Dispatch(targetSize[0] / 8, targetSize[1] / 8, 1);
 	renderShader.Block();
-	
+	t = clock() - t; 
+	std::cout << "Kernel time:" << (double)t/CLOCKS_PER_SEC << std::endl;
 }
 
 void Renderer::GetImage(Image& image)
