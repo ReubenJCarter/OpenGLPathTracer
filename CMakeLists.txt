@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
-project(GPUPathTracingRenderer)
-set(PROJECT_BRIEF "GPUPathTracingRenderer")
+project(GPUPathTracing)
+set(PROJECT_BRIEF "GPUPathTracing")
 set(CMAKE_BUILD_TYPE DEBUG)
 set(GCC_COMPILE_FLAGS "-std=c++11 -Wall -O3 -g")
 set(GCC_LINK_FLAGS "")
