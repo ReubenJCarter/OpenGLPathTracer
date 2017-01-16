@@ -139,7 +139,7 @@ void Scene::RebuildBVH(int maxdepth)
 }
 
 void Scene::AllocateGPUBuffers()
-{
+{	
 	verticiesSB.Allocate(verticies.size(), 0, &verticies[0]);
 	trianglesSB.Allocate(triangles.size(), 1, &triangles[0]);
 	bvhSB.Allocate(bvh.nodes.size(), 2, &bvh.nodes[0]);

@@ -81,9 +81,9 @@ const std::string shaderSrc = ""
 //"		int nodeSize = node.offsetAndSize.y;"
 "		vec3 minaabb = vec3(node.minX, node.minY, node.minZ);"
 "		vec3 maxaabb = vec3(node.maxX, node.maxY, node.maxZ);"
-"		int triangleIndexOffset = node.offs;"
+"		int triangleIndexOffset = node.l;"
+"		int nodeSize = node.r;"
 "		bool isLeaf = triangleIndexOffset >= 0;"
-"		int nodeSize = node.sz;"
 "		if(RayIntersectBox(rayOrig, rayDirInv, minaabb, maxaabb, dist))"
 "		{"
 "			if(isLeaf)"
@@ -232,8 +232,6 @@ void Renderer::SetMaxBounce(int b)
 
 void Renderer::Render(Scene& scene)
 {
-	clock_t t = clock();
-	
 	renderShader.SetStorageBuffer<Vertex>("verticiesSB", scene.verticiesSB);
 	renderShader.SetStorageBuffer<Triangle>("trianglesSB", scene.trianglesSB);
 	renderShader.SetStorageBuffer<BVH::BVHNode>("bvhSB", scene.bvhSB);
@@ -251,7 +249,6 @@ void Renderer::Render(Scene& scene)
 	float camLen = scene.camera.GetLength();
 	renderShader.SetFloat("cameraLength", camLen);
 	
-	
 	std::uniform_real_distribution<float> randDist(0.0f, 1.0f);
 	std::vector<float> randVec(maxBounce * 2);
 	for(int i = 0; i < maxBounce; i++)
@@ -267,14 +264,9 @@ void Renderer::Render(Scene& scene)
 	
 	int targetSize[] = {shaderImage.GetWidth(), shaderImage.GetHeight()};
 	renderShader.SetInt2("targetSize", targetSize);
-	t = clock() - t; 
-	std::cout << "Kernel setup time:" << (double)t/CLOCKS_PER_SEC << std::endl;
-	
-	t = clock();
+
 	renderShader.Dispatch(targetSize[0] / 8, targetSize[1] / 8, 1);
 	renderShader.Block();
-	t = clock() - t; 
-	std::cout << "Kernel time:" << (double)t/CLOCKS_PER_SEC << std::endl;
 }
 
 void Renderer::GetImage(Image& image)

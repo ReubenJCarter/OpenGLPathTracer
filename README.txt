@@ -26,3 +26,10 @@ for bounce count
 	Color += material.Emmitance * runningBRDF
 	runningBRDF *= BRDF
 	Set Ray to new ray
+	
+Speeding up BVH intersect
+
+-vertex data in triangle structure?
+-layout triangles / verticies better?
+-Bredth first data layout better for cache? bredth first search?
+-improve BVH generate?
