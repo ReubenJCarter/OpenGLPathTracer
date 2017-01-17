@@ -136,6 +136,7 @@ bool Scene::BackgroundCubeImageFromFile(std::string fileName[6])
 void Scene::RebuildBVH(int maxdepth)
 {
 	bvh.Build(triangles, verticies, maxdepth);
+	bvh.BuildNodes2();
 }
 
 void Scene::AllocateGPUBuffers()
@@ -143,6 +144,7 @@ void Scene::AllocateGPUBuffers()
 	verticiesSB.Allocate(verticies.size(), 0, &verticies[0]);
 	trianglesSB.Allocate(triangles.size(), 1, &triangles[0]);
 	bvhSB.Allocate(bvh.nodes.size(), 2, &bvh.nodes[0]);
+	bvh2SB.Allocate(bvh.nodes2.size(), 4, &bvh.nodes2[0]);
 	materialsSB.Allocate(materials.size(), 3, &materials[0]);
 }
 

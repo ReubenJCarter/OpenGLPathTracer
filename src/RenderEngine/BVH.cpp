@@ -258,6 +258,32 @@ void BVH::Build(std::vector<Triangle>& triangleList, std::vector<Vertex>& vertex
 }
 
 
+void BVH::BuildNodes2()
+{	
+	//build depth first memory layout 
+	nodes2.resize(nodes.size());
+	int nodeIndex = 0;
+	while(nodeIndex < nodes.size())
+	{
+		nodes2[nodeIndex].aabb = nodes[nodeIndex].aabb;
+		if(nodes[nodeIndex].triangleIndexOffset < 0)
+		{
+			nodes2[nodeIndex].l = nodeIndex + 1;
+			if(nodes[nodeIndex + 1].triangleIndexOffset < 0)
+				nodes2[nodeIndex].r = nodeIndex + nodes[nodeIndex + 1].nodeSize + 2;
+			else
+				nodes2[nodeIndex].r = nodeIndex + 2;
+		}
+		else
+		{
+			nodes2[nodeIndex].l = nodes[nodeIndex].triangleIndexOffset;
+			nodes2[nodeIndex].r = -nodes[nodeIndex].nodeSize;
+		}
+		nodeIndex++;
+	}
+}
+
+
 void BVH::ToFile(std::string fileName)
 {
 	std::ofstream bvhFile(fileName.c_str());

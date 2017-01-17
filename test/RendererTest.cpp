@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Loaded scene file" << std::endl;
 	
-	scene.RebuildBVH(32);
+	scene.RebuildBVH(64);
 	scene.bvh.ToFile("test.bvh");
 	
 	std::cout << "Rebuilt BVH" << std::endl;
@@ -63,6 +63,7 @@ int main(int argc, char* argv[])
 	
 	int sampleCount = 1;
 	clock_t t;
+	
 	while(true)
 	{
 		t = clock();

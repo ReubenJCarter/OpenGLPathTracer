@@ -45,6 +45,11 @@ const std::string shaderSrc = ""
 "	BVHNode bvh[];"
 "};"
 
+"layout (std430) buffer bvh2SB"
+"{"
+"	BVHNode bvh2[];"
+"};"
+
 "layout (std430) buffer materialsSB"
 "{"
 "	Material materials[];"
@@ -69,10 +74,9 @@ const std::string shaderSrc = ""
 "void RayIntersectBVH(vec3 rayOrig, vec3 rayDir, vec3 rayDirInv, out int triIndex, out vec4 hit)"
 "{"
 "	float dist = 1e10;"
-"	int nodeIndex = 0;"
 "	triIndex = -1;"
 "	BVHNode node;"
-"	while(nodeIndex < nodeCount)"
+"	for(int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++)"
 "	{"
 "		node = bvh[nodeIndex];"
 //"		vec3 minaabb = node.min.xyz;"
@@ -88,7 +92,8 @@ const std::string shaderSrc = ""
 "		{"
 "			if(isLeaf)"
 "			{"
-"				for(int i = triangleIndexOffset; i < triangleIndexOffset + nodeSize; i++)"
+"				int tLen = triangleIndexOffset + nodeSize;"
+"				for(int i = triangleIndexOffset; i < tLen; i++)"
 "				{"
 "					Triangle tri = triangles[i];"
 "					vec3 a = verticies[tri.a].pos.xyz;"
@@ -108,7 +113,55 @@ const std::string shaderSrc = ""
 "		{"
 "			nodeIndex += nodeSize;"
 "		}"
-"		nodeIndex++;"
+"	}"
+"}"
+
+"void RayIntersectBVH2(vec3 rayOrig, vec3 rayDir, vec3 rayDirInv, out int triIndex, out vec4 hit)"
+"{"
+"	float dist = 1e10;"
+"	int nodeIndex;"
+"	triIndex = -1;"
+"	BVHNode node;"
+"	int stackPtr = 0;"
+"	int stack[32];"
+"	stack[0] = 0;"
+"	while(stackPtr >= 0)"
+"	{"
+"		nodeIndex = stack[stackPtr--];"
+"		node = bvh2[nodeIndex];"
+"		vec3 minaabb = vec3(node.minX, node.minY, node.minZ);"
+"		vec3 maxaabb = vec3(node.maxX, node.maxY, node.maxZ);"
+"		bool isLeaf = node.r < 0;"
+"		if(!isLeaf)"
+"		{"
+"			if(RayIntersectBox(rayOrig, rayDirInv, minaabb, maxaabb, dist))"
+"			{"
+"				stack[++stackPtr] = node.r;"
+"				stack[++stackPtr] = node.l;"
+"			}"
+"		}"
+"		else"
+"		{"
+"			if(RayIntersectBox(rayOrig, rayDirInv, minaabb, maxaabb, dist))"
+"			{"
+"				int triangleIndexOffset = node.l;"
+"				int nodeSize = node.r;"//This is negative if leafnode 
+"				for(int i = triangleIndexOffset; i < triangleIndexOffset - nodeSize; i++)"
+"				{"
+"					Triangle tri = triangles[i];"
+"					vec3 a = verticies[tri.a].pos.xyz;"
+"					vec3 b = verticies[tri.b].pos.xyz;"
+"					vec3 c = verticies[tri.c].pos.xyz;"
+"					vec4 h;"
+"					if(RayIntersectTri(rayOrig, rayDir, a, b, c, h, dist))"
+"					{"
+"						dist = h.w;"
+"						triIndex = i;"
+"						hit = h;"
+"					}"
+"				}"
+"			}"
+"		}"
 "	}"
 "}"
 
@@ -133,7 +186,7 @@ const std::string shaderSrc = ""
 "	}"
 "}"
 
-"layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;"
+"layout (local_size_x = 16, local_size_y = 16, local_size_z = 1) in;"
 "void main()"
 "{"
 "	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);"
@@ -235,6 +288,7 @@ void Renderer::Render(Scene& scene)
 	renderShader.SetStorageBuffer<Vertex>("verticiesSB", scene.verticiesSB);
 	renderShader.SetStorageBuffer<Triangle>("trianglesSB", scene.trianglesSB);
 	renderShader.SetStorageBuffer<BVH::BVHNode>("bvhSB", scene.bvhSB);
+	renderShader.SetStorageBuffer<BVH::BVHNode2>("bvh2SB", scene.bvh2SB);
 	renderShader.SetStorageBuffer<Material>("materialsSB", scene.materialsSB);
 	renderShader.SetInt("triangleCount", scene.trianglesSB.Size());
 	renderShader.SetInt("nodeCount", scene.bvhSB.Size());
@@ -256,7 +310,7 @@ void Renderer::Render(Scene& scene)
 		randVec[i * 2 + 0] = randDist(randGenerator);
 		randVec[i * 2 + 1] = randDist(randGenerator);
 	}
-	GLComputeHelper::StorageBuffer<float> randNumSB(maxBounce * 2, 5, &randVec[0]);
+	GLComputeHelper::StorageBuffer<float> randNumSB(maxBounce * 2, 8, &randVec[0]);
 	renderShader.SetStorageBuffer<float>("randNumSB", randNumSB);
 	
 	renderShader.SetFloat3("backgroundColor", scene.backgroundColor);
@@ -265,7 +319,8 @@ void Renderer::Render(Scene& scene)
 	int targetSize[] = {shaderImage.GetWidth(), shaderImage.GetHeight()};
 	renderShader.SetInt2("targetSize", targetSize);
 
-	renderShader.Dispatch(targetSize[0] / 8, targetSize[1] / 8, 1);
+	renderShader.Dispatch(targetSize[0] / 16, targetSize[1] / 16, 1);
+	
 	renderShader.Block();
 }
 
