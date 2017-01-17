@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Allocated GPU Buffers" << std::endl;
 	
-	Renderer renderer(size, size, 3);
+	Renderer renderer(size, size, 5);
 	
 	std::cout << "Created renderer" << std::endl;
 	
@@ -80,5 +80,64 @@ int main(int argc, char* argv[])
 		std::cout << "Render Sample:" << sampleCount << " time:" << (double)t / (double)CLOCKS_PER_SEC  << std::endl;
 		
 		sampleCount++;
+		
+		//Movement
+		GLFWwindow* window = context.GetGLFWWindow();
+		int state = glfwGetKey(window, GLFW_KEY_W);
+		if (state == GLFW_PRESS)
+		{
+			scene.camera.position.z += 0.01f;
+			renderer.ClearTarget();
+			sampleCount = 1;
+		}
+		state = glfwGetKey(window, GLFW_KEY_S);
+		if (state == GLFW_PRESS)
+		{
+			scene.camera.position.z -= 0.01f;
+			renderer.ClearTarget();
+			sampleCount = 1;
+		}
+		state = glfwGetKey(window, GLFW_KEY_D);
+		if (state == GLFW_PRESS)
+		{
+			scene.camera.position.x += 0.01f;
+			renderer.ClearTarget();
+			sampleCount = 1;
+		}
+		state = glfwGetKey(window, GLFW_KEY_A);
+		if (state == GLFW_PRESS)
+		{
+			scene.camera.position.x -= 0.01f;
+			renderer.ClearTarget();
+			sampleCount = 1;
+		}
+		state = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
+		if (state == GLFW_PRESS)
+		{
+			scene.camera.position.y -= 0.01f;
+			renderer.ClearTarget();
+			sampleCount = 1;
+		}
+		state = glfwGetKey(window, GLFW_KEY_SPACE);
+		if (state == GLFW_PRESS)
+		{
+			scene.camera.position.y += 0.01f;
+			renderer.ClearTarget();
+			sampleCount = 1;
+		}
+		state = glfwGetKey(window, GLFW_KEY_E);
+		if (state == GLFW_PRESS)
+		{
+			scene.camera.rotation.y += 0.01f;
+			renderer.ClearTarget();
+			sampleCount = 1;
+		}
+		state = glfwGetKey(window, GLFW_KEY_Q);
+		if (state == GLFW_PRESS)
+		{
+			scene.camera.rotation.y -= 0.01f;
+			renderer.ClearTarget();
+			sampleCount = 1;
+		}
 	}
 }

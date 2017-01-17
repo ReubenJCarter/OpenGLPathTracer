@@ -107,6 +107,7 @@ const std::string shaderSrc = ""
 "						hit = h;"
 "					}"
 "				}"
+//"				triIndex = 0;"
 "			}"
 "		}"
 "		else if(!isLeaf)"
@@ -257,7 +258,6 @@ const std::string shaderSrc = ""
 
 Renderer::Renderer(int w, int h, int b)
 {
-	
 	std::string src;
 	src += v430ShaderSrc;
 	src += commonTypesSrc;
@@ -275,6 +275,7 @@ Renderer::Renderer(int w, int h, int b)
  
 void Renderer::SetTargetSize(int w, int h)
 {
+	clearData.resize(w * h * 4);
 	shaderImage.Allocate(w, h);
 }
 
@@ -332,6 +333,11 @@ void Renderer::GetImage(Image& image)
 unsigned int Renderer::GetTexture()
 {
 	return shaderImage.GetTexture();
+}
+
+void Renderer::ClearTarget()
+{
+	shaderImage.Copy(&clearData[0]);
 }
 
 
