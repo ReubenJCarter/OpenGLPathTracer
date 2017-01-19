@@ -41,7 +41,7 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 	float lengthX = parent->aabb.max[0] - parent->aabb.min[0]; 
 	float lengthY = parent->aabb.max[1] - parent->aabb.min[1]; 
 	float lengthZ = parent->aabb.max[2] - parent->aabb.min[2];
-	float lowestCost = parent->nodeSize * (lengthX * lengthY + lengthY * lengthZ + lengthZ * lengthX);
+	float lowestCost = parent->skipIndexAndTriangleCount * (lengthX * lengthY + lengthY * lengthZ + lengthZ * lengthX);
 	float splitPlane;
 	int splitAxis = -1;
 	AABB splitAABB[2];
@@ -75,7 +75,7 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 			aabb[1].max[0] = std::numeric_limits<float>::min();
 			aabb[1].max[1] = std::numeric_limits<float>::min();
 			aabb[1].max[2] = std::numeric_limits<float>::min();
-			for(int i = 0; i < parent->nodeSize; i++)
+			for(int i = 0; i < parent->skipIndexAndTriangleCount; i++)
 			{
 				if(triRefs[i].centroid[axis] <= currentSplitPlane)
 				{
@@ -133,8 +133,8 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 		return 0; // return 0 as node has no children
 			
 	//Sort List in place around split and get index of split point	
-	int splitIndex = parent->nodeSize - 1;
-	for(int i = 0; i < parent->nodeSize; i++)
+	int splitIndex = parent->skipIndexAndTriangleCount - 1;
+	for(int i = 0; i < parent->skipIndexAndTriangleCount; i++)
 	{
 		if(i >= splitIndex)
 			break; 
@@ -165,7 +165,7 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 	BVHNode bvhNode0;
 	bvhNode0.aabb = splitAABB[0];
 	bvhNode0.triangleIndexOffset = nodes[parentIndex].triangleIndexOffset;
-	bvhNode0.nodeSize = splitCount[0];
+	bvhNode0.skipIndexAndTriangleCount = splitCount[0];
 	nodes.push_back(bvhNode0);
 	
 	//Recurse on BVHNode 0 list 
@@ -175,7 +175,7 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 	BVHNode bvhNode1;
 	bvhNode1.aabb = splitAABB[1];
 	bvhNode1.triangleIndexOffset = nodes[parentIndex].triangleIndexOffset + splitIndex;
-	bvhNode1.nodeSize = splitCount[1];
+	bvhNode1.skipIndexAndTriangleCount = splitCount[1];
 	nodes.push_back(bvhNode1);
 	
 	//Recurse on BVHNode 1 list
@@ -185,7 +185,7 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 	nodes[parentIndex].triangleIndexOffset = -1;
 	
 	//the number of nodes under the parent (is increassed by 2 from the ones created in this function + all the sub nodes created(this function also returns the number))
-	nodes[parentIndex].nodeSize = nodeNumberBellow;
+	nodes[parentIndex].skipIndexAndTriangleCount = parentIndex + nodeNumberBellow + 1;
 	
 	return nodeNumberBellow;
 }
@@ -241,7 +241,7 @@ void BVH::Build(std::vector<Triangle>& triangleList, std::vector<Vertex>& vertex
 		bvhParent.aabb.max[2] = std::max(bvhParent.aabb.max[2], triangleInfo[i].aabb.max[2]);
 	}
 	bvhParent.triangleIndexOffset = 0;
-	bvhParent.nodeSize = triangleInfo.size();
+	bvhParent.skipIndexAndTriangleCount = triangleInfo.size();
 	nodes.push_back(bvhParent);
 	
 	//Run the recursive build function
@@ -270,14 +270,14 @@ void BVH::BuildNodes2()
 		{
 			nodes2[nodeIndex].l = nodeIndex + 1;
 			if(nodes[nodeIndex + 1].triangleIndexOffset < 0)
-				nodes2[nodeIndex].r = nodeIndex + nodes[nodeIndex + 1].nodeSize + 2;
+				nodes2[nodeIndex].r = nodes[nodeIndex + 1].skipIndexAndTriangleCount;
 			else
 				nodes2[nodeIndex].r = nodeIndex + 2;
 		}
 		else
 		{
 			nodes2[nodeIndex].l = nodes[nodeIndex].triangleIndexOffset;
-			nodes2[nodeIndex].r = -nodes[nodeIndex].nodeSize;
+			nodes2[nodeIndex].r = -nodes[nodeIndex].skipIndexAndTriangleCount;
 		}
 		nodeIndex++;
 	}
@@ -293,7 +293,7 @@ void BVH::ToFile(std::string fileName)
 		{
 			bvhFile << nodes[i].aabb.min[0] << ", " << nodes[i].aabb.min[1] << ", " << nodes[i].aabb.min[2] << ", " 
 					<< nodes[i].aabb.max[0] << ", " << nodes[i].aabb.max[1] << ", " << nodes[i].aabb.max[2] << ", "
-					<< nodes[i].triangleIndexOffset << ", " << nodes[i].nodeSize << "\n";
+					<< nodes[i].triangleIndexOffset << ", " << nodes[i].skipIndexAndTriangleCount << "\n";
 		}
 		bvhFile.close();
 	}

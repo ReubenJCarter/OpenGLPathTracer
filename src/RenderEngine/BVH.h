@@ -31,7 +31,7 @@ class BVH
 		{
 			AABB aabb;
 			int triangleIndexOffset; //offset into triangle Index (negative if not leaf node)
-			int nodeSize; //total number of children under it (including sub children etc.), also the triangle number for leaf nodes. 
+			int skipIndexAndTriangleCount; //sibling index and triangle count
 			//int pad0; int pad1; 
 		};
 		struct BVHNode2
