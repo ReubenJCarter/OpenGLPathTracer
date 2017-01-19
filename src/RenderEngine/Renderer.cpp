@@ -90,6 +90,8 @@ const std::string shaderSrc = ""
 "		{"
 "			if(isLeaf)"
 "			{"
+
+
 "				int tLen = triangleIndexOffset + triCountAndSkip;"
 "				for(int i = triangleIndexOffset; i < tLen; i++)"
 "				{"
@@ -105,6 +107,22 @@ const std::string shaderSrc = ""
 "						hit = h;"
 "					}"
 "				}"
+
+/*
+//Triangle test for BVH with a single triangle in the root (actually only need one index parameter per node with single triangle per node)
+"				Triangle tri = triangles[triangleIndexOffset];"
+"				vec3 a = verticies[tri.a].pos.xyz;"
+"				vec3 b = verticies[tri.b].pos.xyz;"
+"				vec3 c = verticies[tri.c].pos.xyz;"
+"				vec4 h;"
+"				if(RayIntersectTri(rayOrig, rayDir, a, b, c, h, dist))"
+"				{"
+"					dist = h.w;"
+"					triIndex = triangleIndexOffset;"
+"					hit = h;"
+"				}"
+*/
+
 "			}"
 "			nodeIndex++;"
 "		}"

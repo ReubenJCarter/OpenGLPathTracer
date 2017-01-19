@@ -61,6 +61,8 @@ int main(int argc, char* argv[])
 		ss >> scene.camera.rotation.x >> scene.camera.rotation.y >> scene.camera.rotation.z;
 	}
 	
+	double moveSpeed = 0.05f;
+	
 	int sampleCount = 1;
 	clock_t t;
 	
@@ -77,7 +79,8 @@ int main(int argc, char* argv[])
 		context.PollEvents();
 		
 		t = clock() - t;
-		std::cout << "Render Sample:" << sampleCount << " time:" << (double)t / (double)CLOCKS_PER_SEC  << std::endl;
+		double frameTime = (double)t / (double)CLOCKS_PER_SEC;
+		std::cout << "Render Sample:" << sampleCount << " time:" << frameTime  << std::endl;
 		
 		sampleCount++;
 		
@@ -86,56 +89,56 @@ int main(int argc, char* argv[])
 		int state = glfwGetKey(window, GLFW_KEY_W);
 		if (state == GLFW_PRESS)
 		{
-			scene.camera.position.z += 0.01f;
+			scene.camera.position.z += moveSpeed;
 			renderer.ClearTarget();
 			sampleCount = 1;
 		}
 		state = glfwGetKey(window, GLFW_KEY_S);
 		if (state == GLFW_PRESS)
 		{
-			scene.camera.position.z -= 0.01f;
+			scene.camera.position.z -= moveSpeed;
 			renderer.ClearTarget();
 			sampleCount = 1;
 		}
 		state = glfwGetKey(window, GLFW_KEY_D);
 		if (state == GLFW_PRESS)
 		{
-			scene.camera.position.x += 0.01f;
+			scene.camera.position.x += moveSpeed;
 			renderer.ClearTarget();
 			sampleCount = 1;
 		}
 		state = glfwGetKey(window, GLFW_KEY_A);
 		if (state == GLFW_PRESS)
 		{
-			scene.camera.position.x -= 0.01f;
+			scene.camera.position.x -= moveSpeed;
 			renderer.ClearTarget();
 			sampleCount = 1;
 		}
 		state = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
 		if (state == GLFW_PRESS)
 		{
-			scene.camera.position.y -= 0.01f;
+			scene.camera.position.y -= moveSpeed;
 			renderer.ClearTarget();
 			sampleCount = 1;
 		}
 		state = glfwGetKey(window, GLFW_KEY_SPACE);
 		if (state == GLFW_PRESS)
 		{
-			scene.camera.position.y += 0.01f;
+			scene.camera.position.y += moveSpeed;
 			renderer.ClearTarget();
 			sampleCount = 1;
 		}
 		state = glfwGetKey(window, GLFW_KEY_E);
 		if (state == GLFW_PRESS)
 		{
-			scene.camera.rotation.y += 0.01f;
+			scene.camera.rotation.y += moveSpeed;
 			renderer.ClearTarget();
 			sampleCount = 1;
 		}
 		state = glfwGetKey(window, GLFW_KEY_Q);
 		if (state == GLFW_PRESS)
 		{
-			scene.camera.rotation.y -= 0.01f;
+			scene.camera.rotation.y -= moveSpeed;
 			renderer.ClearTarget();
 			sampleCount = 1;
 		}
