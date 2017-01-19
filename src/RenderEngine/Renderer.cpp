@@ -30,32 +30,32 @@ namespace RenderEngine
 const std::string shaderSrc = ""
 "layout(rgba32f) uniform image2D outputImage;"
 
-"layout (std430) readonly buffer verticiesSB"
+"layout (std430, binding=0) readonly buffer verticiesSB"
 "{"
 "	Vertex verticies[];"
 "};"
 
-"layout (std430) readonly buffer trianglesSB"
+"layout (std430, binding=1) readonly buffer trianglesSB"
 "{"
 "	Triangle triangles[];"
 "};"
 
-"layout (std430) readonly buffer bvhSB"
+"layout (std430, binding=2) readonly buffer bvhSB"
 "{"
 "	BVHNode bvh[];"
 "};"
 
-"layout (std430) readonly buffer bvh2SB"
+"layout (std430, binding=3) readonly buffer bvh2SB"
 "{"
 "	BVHNode bvh2[];"
 "};"
 
-"layout (std430) readonly  buffer materialsSB"
+"layout (std430, binding=4) readonly  buffer materialsSB"
 "{"
 "	Material materials[];"
 "};"
 
-"layout (std430) readonly buffer randNumSB"
+"layout (std430, binding=5) readonly buffer randNumSB"
 "{"
 "	vec2 randNum[];"
 "};"
@@ -107,7 +107,6 @@ const std::string shaderSrc = ""
 "						hit = h;"
 "					}"
 "				}"
-
 /*
 //Triangle test for BVH with a single triangle in the root (actually only need one index parameter per node with single triangle per node)
 "				Triangle tri = triangles[triangleIndexOffset];"

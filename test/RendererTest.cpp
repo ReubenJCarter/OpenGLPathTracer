@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Allocated GPU Buffers" << std::endl;
 	
-	Renderer renderer(size, size, 5);
+	Renderer renderer(size, size, 3);
 	
 	std::cout << "Created renderer" << std::endl;
 	
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 		ss >> scene.camera.rotation.x >> scene.camera.rotation.y >> scene.camera.rotation.z;
 	}
 	
-	double moveSpeed = 0.05f;
+	double moveSpeed = 0.01f;
 	
 	int sampleCount = 1;
 	clock_t t;
