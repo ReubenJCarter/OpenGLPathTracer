@@ -41,7 +41,6 @@ class Scene
 		GLComputeHelper::StorageBuffer<Triangle> trianglesSB;
 		GLComputeHelper::StorageBuffer<Material> materialsSB;
 		GLComputeHelper::StorageBuffer<BVH::BVHNode> bvhSB;
-		GLComputeHelper::StorageBuffer<BVH::BVHNode2> bvh2SB;
 		std::vector<GLComputeHelper::Texture> textures;
 		float backgroundColor[3];
 		Image backgroundCubeImages[6]; 

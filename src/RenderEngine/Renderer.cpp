@@ -304,7 +304,6 @@ void Renderer::Render(Scene& scene)
 	renderShader.SetStorageBuffer<Vertex>("verticiesSB", scene.verticiesSB);
 	renderShader.SetStorageBuffer<Triangle>("trianglesSB", scene.trianglesSB);
 	renderShader.SetStorageBuffer<BVH::BVHNode>("bvhSB", scene.bvhSB);
-	renderShader.SetStorageBuffer<BVH::BVHNode2>("bvh2SB", scene.bvh2SB);
 	renderShader.SetStorageBuffer<Material>("materialsSB", scene.materialsSB);
 	renderShader.SetInt("triangleCount", scene.trianglesSB.Size());
 	renderShader.SetInt("nodeCount", scene.bvhSB.Size());

@@ -34,12 +34,6 @@ class BVH
 			int skipIndexAndTriangleCount; //sibling index and triangle count
 			//int pad0; int pad1; 
 		};
-		struct BVHNode2
-		{
-			AABB aabb;
-			int l;
-			int r;
-		};
 		
 	private:
 		struct TriangleInfo
@@ -56,11 +50,9 @@ class BVH
 		
 	public:
 		std::vector<BVHNode> nodes;
-		std::vector<BVHNode2> nodes2;
 		
 		BVH();
 		void Build(std::vector<Triangle>& triangleList, std::vector<Vertex>& vertexList, int maxdepth);
-		void BuildNodes2();
 		void ToFile(std::string fileName);
 };
 
