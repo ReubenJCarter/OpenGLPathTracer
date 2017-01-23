@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
 	std::cout << "Rebuilt BVH" << std::endl;
 	
 	scene.AllocateGPUBuffers();
+	scene.AllocateGPUBufferTextures();
 	
 	std::cout << "Allocated GPU Buffers" << std::endl;
 	

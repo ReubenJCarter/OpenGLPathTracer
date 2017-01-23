@@ -9,6 +9,8 @@
 #include "Camera.h"
 #include "GLComputeHelper/StorageBuffer.h"
 #include "GLComputeHelper/Texture.h"
+#include "GLComputeHelper/BufferTexture.h"
+
 
 /**
  *
@@ -41,6 +43,10 @@ class Scene
 		GLComputeHelper::StorageBuffer<Triangle> trianglesSB;
 		GLComputeHelper::StorageBuffer<Material> materialsSB;
 		GLComputeHelper::StorageBuffer<BVH::BVHNode> bvhSB;
+		GLComputeHelper::BufferTexture verticiesPosBT;
+		GLComputeHelper::BufferTexture verticiesNormBT;
+		GLComputeHelper::BufferTexture trianglesBT;
+		GLComputeHelper::BufferTexture bvhBT;
 		std::vector<GLComputeHelper::Texture> textures;
 		float backgroundColor[3];
 		Image backgroundCubeImages[6]; 
@@ -52,6 +58,7 @@ class Scene
 		bool BackgroundCubeImageFromFile(std::string fileName[6]);
 		void RebuildBVH(int maxdepth=64);
 		void AllocateGPUBuffers();
+		void AllocateGPUBufferTextures();
 };
 
 

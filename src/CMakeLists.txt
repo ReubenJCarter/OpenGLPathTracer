@@ -9,6 +9,7 @@ set(GLHelperSrc
 	GLComputeHelper/ShaderImage.cpp
 	GLComputeHelper/QuadImage.cpp
 	GLComputeHelper/Texture.cpp
+	GLComputeHelper/BufferTexture.cpp
 )	
 
 add_library(GLComputeHelper STATIC ${GLHelperSrc})

@@ -146,5 +146,48 @@ void Scene::AllocateGPUBuffers()
 	materialsSB.Allocate(materials.size(), 3, &materials[0]);
 }
 
+void Scene::AllocateGPUBufferTextures()
+{
+	std::vector<float> posBuffer(verticies.size() * 4);
+	std::vector<float> normBuffer(verticies.size() * 4);
+	for(int i = 0; i < verticies.size(); i++)
+	{
+		posBuffer[i * 4 + 0] = verticies[i].pos[0];
+		posBuffer[i * 4 + 1] = verticies[i].pos[1];
+		posBuffer[i * 4 + 2] = verticies[i].pos[2];
+		normBuffer[i * 4 + 0] = verticies[i].norm[0];
+		normBuffer[i * 4 + 1] = verticies[i].norm[1];
+		normBuffer[i * 4 + 2] = verticies[i].norm[2];
+	}
+	std::vector<int> triBuffer(triangles.size() * 4); 
+	for(int i = 0; i < triangles.size(); i++)
+	{
+		triBuffer[i * 4 + 0] = triangles[i].verI[0];
+		triBuffer[i * 4 + 1] = triangles[i].verI[1];
+		triBuffer[i * 4 + 2] = triangles[i].verI[2];
+		triBuffer[i * 4 + 3] = triangles[i].matI;
+	}
+	
+	std::vector<int> bvhBuffer(bvh.nodes.size() * 8);
+	for(int i = 0; i < bvh.nodes.size(); i++)
+	{
+		bvhBuffer[i * 8 + 0] = *((int*)(&(bvh.nodes[i].aabb.min[0])));
+		bvhBuffer[i * 8 + 1] = *((int*)(&(bvh.nodes[i].aabb.min[1])));
+		bvhBuffer[i * 8 + 2] = *((int*)(&(bvh.nodes[i].aabb.min[2])));
+		bvhBuffer[i * 8 + 3] = bvh.nodes[i].triangleIndexOffset;
+		
+		bvhBuffer[i * 8 + 4] = *((int*)(&(bvh.nodes[i].aabb.max[0])));
+		bvhBuffer[i * 8 + 5] = *((int*)(&(bvh.nodes[i].aabb.max[1])));
+		bvhBuffer[i * 8 + 6] = *((int*)(&(bvh.nodes[i].aabb.max[2])));
+		bvhBuffer[i * 8 + 7] = bvh.nodes[i].skipIndexAndTriangleCount;
+	}
+	
+	verticiesPosBT.Allocate(sizeof(float) * posBuffer.size(), GLComputeHelper::BufferTexture::RGBA32F, &posBuffer[0]);
+	verticiesNormBT.Allocate(sizeof(float) * normBuffer.size(), GLComputeHelper::BufferTexture::RGBA32F, &normBuffer[0]);
+	trianglesBT.Allocate(sizeof(int) * triBuffer.size(), GLComputeHelper::BufferTexture::RGBA32I, &triBuffer[0]);
+	bvhBT.Allocate(sizeof(int) * bvhBuffer.size(), GLComputeHelper::BufferTexture::RGBA32I, &bvhBuffer[0]);
+	
+}
+
 	
 }//RenderEngine Namespace

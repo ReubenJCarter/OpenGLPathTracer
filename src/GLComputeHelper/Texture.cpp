@@ -42,7 +42,6 @@ void Texture::Allocate(int w, int h, TYPE t, FORMAT f, void* data, WRAPPING wrap
 	//set gl variables
 	glType = GL_TEXTURE_2D;
 	if(type == TEXTURE_2D) glType = GL_TEXTURE_2D;
-	else if(type == TEXTURE_BUFFER) glType = GL_TEXTURE_BUFFER;
 	else if(type == CUBE_MAP) glType = GL_TEXTURE_CUBE_MAP;
 	
 	glMinFilter = GL_LINEAR;

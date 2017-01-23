@@ -27,12 +27,11 @@ namespace RenderEngine
 class BVH
 {
 	public:
-		struct BVHNode //exactly 32 bytes (one cache line...) not any more....
+		struct BVHNode //exactly 32 bytes (one cache line...)
 		{
 			AABB aabb;
 			int triangleIndexOffset; //offset into triangle Index (negative if not leaf node)
-			int skipIndexAndTriangleCount; //sibling index and triangle count
-			//int pad0; int pad1; 
+			int skipIndexAndTriangleCount; //sibling index/parent sibling index  and triangle count
 		};
 		
 	private:

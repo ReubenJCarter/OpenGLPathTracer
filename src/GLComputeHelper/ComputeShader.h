@@ -4,6 +4,7 @@
 #include "StorageBuffer.h"
 #include "ShaderImage.h"
 #include "Texture.h"
+#include "BufferTexture.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -60,6 +61,7 @@ class ComputeShader
 		template<class T> void SetStorageBuffer(std::string name, StorageBuffer<T>& storageBuffer);
 		void SetImage(std::string name, ShaderImage& shaderImage);
 		void SetTexture(std::string name, Texture& texture, int textureUnit);
+		void SetBufferTexture(std::string name, BufferTexture& bufferTexture, int textureUnit);
 };
 
 

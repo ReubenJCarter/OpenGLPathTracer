@@ -158,11 +158,14 @@ void ComputeShader::SetTexture(std::string name, Texture& texture, int textureUn
 		glActiveTexture(GL_TEXTURE0 + textureUnit);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, texture.GetTexture());
 	}
-	else if(type == Texture::TEXTURE_BUFFER)
-	{
-		glActiveTexture(GL_TEXTURE0 + textureUnit);
-		glBindTexture(GL_TEXTURE_BUFFER, texture.GetTexture());
-	}
+}
+
+void ComputeShader::SetBufferTexture(std::string name, BufferTexture& bufferTexture, int textureUnit)
+{
+	glProgramUniform1i(computeProgram, glGetUniformLocation(computeProgram, name.c_str()), textureUnit);
+	glActiveTexture(GL_TEXTURE0 + textureUnit);
+	glBindTexture(GL_TEXTURE_BUFFER, bufferTexture.GetTexture());
+	glTexBuffer(GL_TEXTURE_BUFFER, bufferTexture.GetInternalFormat(), bufferTexture.GetBuffer());
 }
  
 }//GLComputeHelper namespace 
