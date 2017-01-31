@@ -150,11 +150,25 @@ void Scene::AllocateGPUBufferTextures()
 {
 	std::vector<float> posBuffer(verticies.size() * 4);
 	std::vector<float> normBuffer(verticies.size() * 4);
+	float temp[] = {0.0f, 0.0f, 0.0f};
 	for(int i = 0; i < verticies.size(); i++)
 	{
-		posBuffer[i * 4 + 0] = verticies[i].pos[0];
-		posBuffer[i * 4 + 1] = verticies[i].pos[1];
-		posBuffer[i * 4 + 2] = verticies[i].pos[2];
+		if(i % 3 != 0)
+		{
+			posBuffer[i * 4 + 0] = verticies[i].pos[0] - temp[0];
+			posBuffer[i * 4 + 1] = verticies[i].pos[1] - temp[1];
+			posBuffer[i * 4 + 2] = verticies[i].pos[2] - temp[2];
+		}
+		else
+		{
+			temp[0] = verticies[i].pos[0];
+			temp[1] = verticies[i].pos[1];
+			temp[2] = verticies[i].pos[2];
+			posBuffer[i * 4 + 0] = verticies[i].pos[0];
+			posBuffer[i * 4 + 1] = verticies[i].pos[1];
+			posBuffer[i * 4 + 2] = verticies[i].pos[2];
+		}
+		
 		normBuffer[i * 4 + 0] = verticies[i].norm[0];
 		normBuffer[i * 4 + 1] = verticies[i].norm[1];
 		normBuffer[i * 4 + 2] = verticies[i].norm[2];

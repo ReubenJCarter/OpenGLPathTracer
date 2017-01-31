@@ -154,20 +154,15 @@ const std::string rayIntersectShaderSrc = ""
  *
  */
 
- 
-"bool RayIntersectTri(vec3 orig, vec3 dir, vec3 va, vec3 vb, vec3 vc, out vec4 hit, float t)"
+"vec3 oneNegOneNegOne = vec3(1.0f, -1.0f, -1.0f);"
+
+"bool RayIntersectTri(vec3 orig, vec3 dir, vec3 va, vec3 e0, vec3 e1, out vec4 hit, float t)"
 "{"
-"	vec3 p0 = va;"
-"	vec3 e0 = vb - va;"
-"	vec3 e1 = vc - va;"
 "	vec3 pv = cross(dir, e1);"
 "	float det = dot(e0, pv);"
-"	vec3 tv = orig - p0;"
+"	vec3 tv = orig - va;"
 "	vec3 qv = cross(tv, e0);"
-"	hit.y = dot(tv, pv);"
-"	hit.z = dot(dir, qv);"
-"	hit.x = dot(e1, qv);"
-"	hit.xyz = hit.xyz / det;"
+"	hit.xyz = vec3(dot(e1, qv), dot(tv, pv), dot(dir, qv)) / det;"
 "	hit.w = hit.x;"
 "	hit.x = 1.0f - hit.z - hit.y;"
 "	return all(greaterThanEqual(hit, vec4(0.0001f))) && hit.w < t;"
