@@ -176,10 +176,12 @@ const std::string rayIntersectShaderSrc = ""
  */
  
 
-"bool RayIntersectBox(vec3 orig, vec3 dirInv, vec3 bbmin, vec3 bbmax, float t)"
+"bool RayIntersectBox(vec3 orig, vec3 dirInv, vec3 origMultDirInv, vec3 bbmin, vec3 bbmax, float t)"
 "{"
-"	vec3 t1 = (bbmin - orig) * dirInv;"
-"	vec3 t2 = (bbmax - orig) * dirInv;"
+//"	vec3 t1 = (bbmin - orig) * dirInv;"
+//"	vec3 t2 = (bbmax - orig) * dirInv;"
+"	vec3 t1 = bbmin * dirInv - origMultDirInv;"
+"	vec3 t2 = bbmax * dirInv - origMultDirInv;"
 "	float tmin = max(max(min(t1.x, t2.x), min(t1.y, t2.y)), min(t1.z, t2.z));"
 "	float tmax = min(min(max(t1.x, t2.x), max(t1.y, t2.y)), max(t1.z, t2.z));"
 "	return tmax >= max(0.0f, tmin) && tmin < t;"
