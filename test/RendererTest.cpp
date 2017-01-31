@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Allocated GPU Buffers" << std::endl;
 	
-	Renderer renderer(size, size, 3);
+	Renderer renderer(size, size, 2);
 	
 	std::cout << "Created renderer" << std::endl;
 	
@@ -79,15 +79,20 @@ int main(int argc, char* argv[])
 		context.SwapBuffers();
 		context.PollEvents();
 		
-		t = clock() - t;
-		double frameTime = (double)t / (double)CLOCKS_PER_SEC;
-		std::cout << "Render Sample:" << sampleCount << " time:" << frameTime  << std::endl;
-		
 		sampleCount++;
 		
 		//Movement
 		GLFWwindow* window = context.GetGLFWWindow();
-		int state = glfwGetKey(window, GLFW_KEY_W);
+		int state = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT);
+		if (state == GLFW_PRESS)
+		{
+			moveSpeed = 0.03f;
+		}
+		else
+		{
+			moveSpeed = 0.01f;
+		}
+		state = glfwGetKey(window, GLFW_KEY_W);
 		if (state == GLFW_PRESS)
 		{
 			scene.camera.position.z += moveSpeed;
@@ -143,5 +148,9 @@ int main(int argc, char* argv[])
 			renderer.ClearTarget();
 			sampleCount = 1;
 		}
+		
+		t = clock() - t;
+		double frameTime = (double)t / (double)CLOCKS_PER_SEC;
+		std::cout << "Render Sample:" << sampleCount << " time:" << frameTime  << std::endl;
 	}
 }
