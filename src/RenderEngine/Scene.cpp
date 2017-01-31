@@ -108,6 +108,8 @@ bool Scene::AddModelFromFile(const std::string fileName)
 		}
 	}
 	
+	std::cout << "Scene: SceneLoad: Added " << verticies.size() << " verticies, " << triangles.size() << " triangles" << std::endl;
+	
 	return true;
 }
 
