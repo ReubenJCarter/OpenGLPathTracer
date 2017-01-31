@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Allocated GPU Buffers" << std::endl;
 	
-	Renderer renderer(size, size, 2);
+	Renderer renderer(size, size, 3);
 	
 	std::cout << "Created renderer" << std::endl;
 	

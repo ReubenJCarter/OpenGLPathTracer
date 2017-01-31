@@ -100,6 +100,7 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 			}
 			//check for bad case with one or less triangle in 
 			if (count[0] <= 1 || count[1] <= 1) continue;
+			//if (count[0] <= 0 && count[1] <= 0) continue;
 			
 			//compute the cost of both aabbs and sum to find total cost
 			float lenX[2];
