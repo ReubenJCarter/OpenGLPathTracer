@@ -63,6 +63,7 @@ const std::string shaderSrc = ""
 "uniform int triangleCount;"
 "uniform int nodeCount;"
 "uniform int maxBounce;"
+"uniform int sampleCount;"
 "uniform vec3 backgroundColor;"
 "uniform samplerCube backgroundCube;"
 "uniform ivec2 targetSize;"
@@ -101,7 +102,6 @@ const std::string shaderSrc = ""
 "		{"
 "			if(isLeaf)"
 "			{"
-
 
 "				int tLen = triangleIndexOffset + triCountAndSkip;"
 "				for(int i = triangleIndexOffset; i < tLen; i++)"
@@ -162,11 +162,14 @@ const std::string shaderSrc = ""
 "{"
 "	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);"
 "	vec2 fragCoord = vec2(float(gl_GlobalInvocationID.x) / float(targetSize.x), float(gl_GlobalInvocationID.y) / float(targetSize.y));"
+"	vec3 finalColor = vec3(0, 0, 0);"
 
+"	int s;"
+"	for(s = 0; s < sampleCount; s++)"
+"	{"
 "	vec3 rayDir = cameraRotation * normalize(vec3(2.0f * fragCoord.x - 1.0f, 2.0f * fragCoord.y - 1.0f, cameraLength));"
 "	vec3 rayOrig = cameraPosition;"
 
-"	vec3 finalColor = vec3(0, 0, 0);"
 "	vec3 runningBRDF = vec3(1.0f, 1.0f, 1.0f);"
 "	int triangleIndex;"
 "	vec4 hit;"
@@ -206,7 +209,7 @@ const std::string shaderSrc = ""
 "			vec3 pos = vec3(posa * hit.x + posb * hit.y + posc * hit.z);"
 
 "			vec3 newRayO = pos;"
-"			vec3 newRayD = RandomUnitHemi(Random(fragCoord, randNum[i]), norm);"
+"			vec3 newRayD = RandomUnitHemi(Random(fragCoord, randNum[i + maxBounce * s]), norm);"
 
 "			vec3 BRDF = 2.0f * materialReflectance * max(0.0f, dot(newRayD, norm));"
 
@@ -219,13 +222,15 @@ const std::string shaderSrc = ""
 "		}"
 
 "	}"
+	
+"	}"
 "	vec4 imageCurrentColor = imageLoad(outputImage, storePos);"
-"	imageStore(outputImage, storePos, vec4(imageCurrentColor.xyz + finalColor, 1.0f));"
+"	imageStore(outputImage, storePos, vec4(imageCurrentColor.xyz + finalColor / float(s), 1.0f));"
 "}"
 ;
  
 
-Renderer::Renderer(int w, int h, int b)
+Renderer::Renderer(int w, int h, int b, int s)
 {
 	std::string src;
 	src += v430ShaderSrc;
@@ -237,6 +242,7 @@ Renderer::Renderer(int w, int h, int b)
 	renderShader.Create(src);
 	SetTargetSize(w, h);
 	SetMaxBounce(b);
+	SetSampleCount(s);
 	
 	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 	randGenerator.seed(seed);
@@ -251,6 +257,11 @@ void Renderer::SetTargetSize(int w, int h)
 void Renderer::SetMaxBounce(int b)
 {
 	maxBounce = b;
+}
+
+void Renderer::SetSampleCount(int s)
+{
+	sampleCount = s;
 }
 
 void Renderer::Render(Scene& scene)
@@ -268,6 +279,7 @@ void Renderer::Render(Scene& scene)
 	renderShader.SetInt("triangleCount", scene.trianglesSB.Size());
 	renderShader.SetInt("nodeCount", scene.bvhSB.Size());
 	renderShader.SetInt("maxBounce", maxBounce);
+	renderShader.SetInt("sampleCount", sampleCount); 
 	renderShader.SetImage("outputImage", shaderImage);
 	
 	float camPos[] = {scene.camera.position.x, scene.camera.position.y, scene.camera.position.z};
@@ -279,13 +291,13 @@ void Renderer::Render(Scene& scene)
 	renderShader.SetFloat("cameraLength", camLen);
 	
 	std::uniform_real_distribution<float> randDist(0.0f, 1.0f);
-	std::vector<float> randVec(maxBounce * 2);
-	for(int i = 0; i < maxBounce; i++)
+	std::vector<float> randVec(maxBounce * sampleCount * 2);
+	for(int i = 0; i < maxBounce * sampleCount; i++)
 	{
 		randVec[i * 2 + 0] = randDist(randGenerator);
 		randVec[i * 2 + 1] = randDist(randGenerator);
 	}
-	GLComputeHelper::StorageBuffer<float> randNumSB(maxBounce * 2, 8, &randVec[0]);
+	GLComputeHelper::StorageBuffer<float> randNumSB(maxBounce * sampleCount * 2, 8, &randVec[0]);
 	renderShader.SetStorageBuffer<float>("randNumSB", randNumSB);
 	
 	renderShader.SetFloat3("backgroundColor", scene.backgroundColor);

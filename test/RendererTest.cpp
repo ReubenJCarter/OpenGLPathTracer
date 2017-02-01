@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Allocated GPU Buffers" << std::endl;
 	
-	Renderer renderer(size, size, 2);
+	Renderer renderer(size, size, 6, 1);
 	
 	std::cout << "Created renderer" << std::endl;
 	
@@ -151,6 +151,6 @@ int main(int argc, char* argv[])
 		
 		t = clock() - t;
 		double frameTime = (double)t / (double)CLOCKS_PER_SEC;
-		std::cout << "Render Sample:" << sampleCount << " time:" << frameTime  << std::endl;
+		//std::cout << "Render Sample:" << sampleCount << " time:" << frameTime  << std::endl;
 	}
 }
