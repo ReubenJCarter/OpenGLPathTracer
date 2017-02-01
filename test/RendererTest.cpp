@@ -19,9 +19,10 @@ int main(int argc, char* argv[])
 	
 	Context::Init();
 	
-	int size = 512;
+	int sizeX = 1280;
+	int sizeY = 720;
 	
-	Context context(size, size);
+	Context context(sizeX, sizeY);
 	
 	Scene scene(argv[1]);
 	std::string cubeIm[] = {"cm_left.jpg", "cm_right.jpg", "cm_top.jpg", "cm_bottom.jpg", "cm_front.jpg", "cm_back.jpg"};
@@ -39,19 +40,19 @@ int main(int argc, char* argv[])
 	
 	std::cout << "Allocated GPU Buffers" << std::endl;
 	
-	Renderer renderer(size, size, 5, 16);
+	Renderer renderer(sizeX, sizeY, 5, 1);
 	
 	std::cout << "Created renderer" << std::endl;
 	
-	QuadImage quadImage(size, size);
+	QuadImage quadImage(sizeX, sizeY);
 	
 	//BUNNY
 	//scene.camera.position = glm::vec3(-0.05f, 0.1f, 0.17f);
 	//scene.camera.rotation = glm::vec3(0.0f, 3.141f, 0.0f);
 	scene.camera.fov = 1.1;
 	//DRAGON
-	scene.camera.position = glm::vec3(0.0f, 3.0f, -10.0f);
-	scene.camera.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	scene.camera.position = glm::vec3(0.0f, 0.65f, 2.0f);
+	scene.camera.rotation = glm::vec3(0.0f, 3.141f, 0.0f);
 	
 	if(argc >= 8)
 	{
@@ -151,6 +152,6 @@ int main(int argc, char* argv[])
 		
 		t = clock() - t;
 		double frameTime = (double)t / (double)CLOCKS_PER_SEC;
-		//std::cout << "Render Sample:" << sampleCount << " time:" << frameTime  << std::endl;
+		std::cout << "Render Sample:" << sampleCount << " time:" << frameTime  << std::endl;
 	}
 }
