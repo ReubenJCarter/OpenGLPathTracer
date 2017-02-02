@@ -72,6 +72,8 @@ const std::string shaderSrc = ""
 "uniform vec3 cameraPosition;"
 "uniform mat3 cameraRotation;"
 
+"uniform float clearTarget;"
+
 "void RayIntersectBVH(vec3 rayOrig, vec3 rayDir, out int triIndex, out vec4 hit)"
 "{"
 "	vec4 hitTemp;"
@@ -168,7 +170,7 @@ const std::string shaderSrc = ""
 "	{"
 
 "	vec3 finalColor = vec3(0, 0, 0);"
-"	vec3 rayDir = cameraRotation * normalize(vec3(2.0f * fragCoord.x - 1.0f, 2.0f * fragCoord.y - 1.0f, cameraLength));"
+"	vec3 rayDir = cameraRotation * normalize(vec3( (float(targetSize.x) / float(targetSize.y)) * (2.0f * fragCoord.x - 1.0f), 2.0f * fragCoord.y - 1.0f, cameraLength));"
 "	vec3 rayOrig = cameraPosition;"
 
 "	vec3 runningBRDF = vec3(1.0f, 1.0f, 1.0f);"
@@ -225,7 +227,7 @@ const std::string shaderSrc = ""
 "	}"
 "	sampleColor += finalColor;"
 "	}"
-"	vec4 imageCurrentColor = imageLoad(outputImage, storePos);"
+"	vec4 imageCurrentColor = imageLoad(outputImage, storePos) * clearTarget;"
 "	imageStore(outputImage, storePos, vec4(imageCurrentColor.xyz + sampleColor / float(sampleCount), 1.0f));"
 "}"
 ;
@@ -247,11 +249,13 @@ Renderer::Renderer(int w, int h, int b, int s)
 	
 	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 	randGenerator.seed(seed);
+	
+	clearTarget = true;
+	clearFactor = 0.0f;
 }
  
 void Renderer::SetTargetSize(int w, int h)
 {
-	clearData.resize(w * h * 4);
 	shaderImage.Allocate(w, h);
 }
 
@@ -283,6 +287,16 @@ void Renderer::Render(Scene& scene)
 	renderShader.SetInt("sampleCount", sampleCount); 
 	renderShader.SetImage("outputImage", shaderImage);
 	
+	if(clearTarget)
+	{
+		
+		renderShader.SetFloat("clearTarget", clearFactor);	
+	}
+	else
+	{
+		renderShader.SetFloat("clearTarget", 1.0f);
+	}
+	
 	float camPos[] = {scene.camera.position.x, scene.camera.position.y, scene.camera.position.z};
 	renderShader.SetFloat3("cameraPosition", camPos);
 	float camRot[9]; 
@@ -312,6 +326,8 @@ void Renderer::Render(Scene& scene)
 	renderShader.Dispatch(targetSize[0] / 16, targetSize[1] / 16, 1);
 	
 	renderShader.Block();
+	
+	clearTarget = false;
 }
 
 void Renderer::GetImage(Image& image)
@@ -324,9 +340,10 @@ unsigned int Renderer::GetTexture()
 	return shaderImage.GetTexture();
 }
 
-void Renderer::ClearTarget()
+void Renderer::ClearTarget(float factor)
 {
-	shaderImage.Copy(&clearData[0]);
+	clearFactor = factor;
+	clearTarget = true;
 }
 
 

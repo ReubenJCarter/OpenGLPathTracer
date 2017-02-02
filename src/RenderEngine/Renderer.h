@@ -35,7 +35,8 @@ class Renderer
 		GLComputeHelper::ComputeShader renderShader;
 		GLComputeHelper::ShaderImage shaderImage;
 		std::mt19937 randGenerator; 
-		std::vector<float> clearData;
+		bool clearTarget;
+		float clearFactor;
 		
 	public:
 		Renderer(int w=512, int h=512, int b=16, int s=1);
@@ -45,7 +46,7 @@ class Renderer
 		void Render(Scene& scene);
 		void GetImage(Image& image);
 		unsigned int GetTexture();
-		void ClearTarget();
+		void ClearTarget(float factor=0.0f);
 };
 
 
