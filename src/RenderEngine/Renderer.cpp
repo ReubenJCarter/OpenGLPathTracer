@@ -175,17 +175,18 @@ const std::string shaderSrc = ""
 
 "float GGX_PartialGeometryTerm(vec3 v, vec3 n, vec3 h, float alpha)"
 "{"
-"    float VoH2 = clamp(dot(v,h), 0.0f, 1.0f);"
-"    float chi = chiGGX( VoH2 / clamp(dot(v,n), 0.0f, 1.0f) );"
-"    VoH2 = VoH2 * VoH2;"
-"    float tan2 = ( 1 - VoH2 ) / VoH2;"
-"    return (chi * 2) / ( 1 + sqrt( 1 + alpha * alpha * tan2 ) );"
+"   float VoH2 = clamp(dot(v,h), 0.0f, 1.0f);"
+"	float chi = chiGGX(VoH2 / clamp(dot(v,n), 0.0f, 1.0f));"
+"   VoH2 = VoH2 * VoH2;"
+"   float tan2 = ( 1 - VoH2 ) / VoH2;"
+"   return (chi * 2) / (1 + sqrt( 1 + alpha * alpha * tan2));"
 "}"
 
 "vec3 Fresnel_Schlick(float cosT, vec3 F0)"
 "{"
 "  return F0 + (1-F0) * pow( 1 - cosT, 5);"
 "}"
+
 
 "layout (local_size_x = 16, local_size_y = 16, local_size_z = 1) in;"
 "void main()"
