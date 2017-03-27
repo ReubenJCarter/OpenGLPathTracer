@@ -1,6 +1,3 @@
-add_executable(GlwfGlewTest GlwfGlewTest.cpp)
-target_link_libraries(GlwfGlewTest GLComputeHelper)
-
 add_executable(ShaderImageTest ShaderImageTest.cpp)
 target_link_libraries(ShaderImageTest GLComputeHelper)
 target_link_libraries(ShaderImageTest RenderEngine)

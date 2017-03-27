@@ -2,4 +2,4 @@
 build/
 release/
 dist/
-vendor/
+ext/
