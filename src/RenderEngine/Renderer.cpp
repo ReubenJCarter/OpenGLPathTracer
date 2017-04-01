@@ -28,6 +28,112 @@ namespace RenderEngine
 
 
 const std::string shaderSrc = ""
+"\n#version 430\n"
+
+"\n#define PI 3.14159265359\n"
+
+
+
+
+
+
+
+//http://amindforeverprogramming.blogspot.co.uk/2013/07/random-floats-in-glsl-330.html
+"uint Hash(uint x)"
+"{"
+"	x += (x << 10u);"
+"	x ^= (x >> 6u);"
+"	x += (x << 3u);"
+"	x ^= (x >> 11u);"
+"	x += (x << 15u);"
+"	return x;"
+"}"
+
+"uint Hash(uvec3 v)"
+"{"
+"	return Hash(v.x ^ Hash(v.y) ^ Hash(v.z));"
+"}"
+
+"float Random(vec2 f, float seed)"
+"{"
+"	const uint mantissaMask = 0x007FFFFFu;"
+"	const uint one = 0x3F800000u;"
+"	uint h = Hash(floatBitsToUint(vec3(f, seed)));"
+"	h &= mantissaMask;"
+"	h |= one;"
+"	float r2 = uintBitsToFloat(h);"
+"	return r2 - 1.0;"
+"}"
+
+"vec2 Random(vec2 f, vec2 seed)"
+"{"
+"	return vec2(Random(f, seed.x), Random(f, seed.y));"
+"}"
+
+"vec3 Random(vec2 f, vec3 seed)"
+"{"
+"	return vec3(Random(f, seed.x), Random(f, seed.y), Random(f, seed.z));"
+"}"
+
+"vec3 RandomUnitHemi(vec2 randomVal, vec3 norm)"
+"{"
+"	float a = (randomVal.x + 1.0) * PI;"
+"	float u = randomVal.y;"
+"	float u2 = u * u;"
+"	float sqrt1MinusU2 = sqrt(1.0 - u2);"
+"	float x = sqrt1MinusU2 * cos(a);"
+"	float y = sqrt1MinusU2 * sin(a);"
+"	float z = u;"
+" 	vec3 rh = vec3(x, y, z);"
+"	return rh * sign(dot(rh, norm));"
+"}"
+
+
+
+
+
+
+"struct Vertex"
+"{"
+"	vec4 pos;"
+"	vec4 norm;"
+"	vec4 binorm;"
+"	vec4 tang;"
+"	vec4 uv;"
+"};"
+
+"struct Triangle"
+"{"
+"	int a;"
+"	int b;"
+"	int c;"
+"	int mat;"
+"};"
+
+"struct BVHNode"
+"{"
+"	float minX;"
+"	float minY;"
+"	float minZ;"
+"	float maxX;"
+"	float maxY;"
+"	float maxZ;"
+"	int l;"
+"	int r;"
+"};"
+
+"struct Material"
+"{"
+"	vec4 reflectance;"
+"	vec4 emission;"
+"	ivec4 textureIndex;"
+"};"
+
+
+
+
+
+
 "layout(rgba32f) uniform image2D outputImage;"
 
 "layout (std430, binding=0) readonly buffer verticiesSB"
@@ -268,10 +374,6 @@ const std::string shaderSrc = ""
 Renderer::Renderer(int w, int h, int b, int s)
 {
 	std::string src;
-	src += v430ShaderSrc;
-	src += commonTypesSrc;
-	src += randShaderSrc;
-	src += rayIntersectShaderSrc;
 	src += shaderSrc; 
 	
 	renderShader.Create(src);
