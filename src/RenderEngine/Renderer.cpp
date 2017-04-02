@@ -34,7 +34,10 @@ const std::string shaderSrc = ""
 
 
 
-
+/*
+ *Randomness
+ *
+ */
 
 
 
@@ -90,6 +93,10 @@ const std::string shaderSrc = ""
 
 
 
+/*
+ *Definitions
+ *
+ */
 
 
 
@@ -128,11 +135,6 @@ const std::string shaderSrc = ""
 "	vec4 emission;"
 "	ivec4 textureIndex;"
 "};"
-
-
-
-
-
 
 "layout(rgba32f) uniform image2D outputImage;"
 
@@ -179,6 +181,13 @@ const std::string shaderSrc = ""
 "uniform mat3 cameraRotation;"
 
 "uniform float clearTarget;"
+
+
+/*
+ *Ray Intersection Tests
+ *
+ */
+
 
 "void RayIntersectBVH(vec3 rayOrig, vec3 rayDir, out int triIndex, out vec4 hit)"
 "{"
@@ -248,6 +257,7 @@ const std::string shaderSrc = ""
 "	float dist = 1e10;"
 "	int nodeIndex = 0;"
 "	triIndex = -1;"
+"	vec4 hitTemp;"
 
 "	for(int i = 0; i < triangleCount; i++)"
 "	{"
@@ -256,13 +266,36 @@ const std::string shaderSrc = ""
 "		vec3 e0 = texelFetch(verticiesPosBT, tri.y).xyz;"
 "		vec3 e1 = texelFetch(verticiesPosBT, tri.z).xyz;"
 "		vec4 h;"
-"		if(RayIntersectTri(rayOrig, rayDir, va, e0, e1, h, dist))"
+
+"		vec3 pv = cross(rayDir, e1);"
+"		float det = dot(e0, pv);"
+"		vec3 tv = rayOrig - va;"
+"		vec3 qv = cross(tv, e0);"
+"		hitTemp.xyz = vec3(dot(e1, qv), dot(tv, pv), dot(rayDir, qv)) / det;"
+"		hitTemp.w = hitTemp.x;"
+"		hitTemp.x = 1.0f - hitTemp.z - hitTemp.y;"
+"		bool triray = all(greaterThanEqual(hitTemp, vec4(0.0f, 0.0f, 0.0f, 0.0001f))) && hitTemp.w < dist;"
+
+"		if(triray)"
 "		{"
 "			dist = h.w;"
 "			triIndex = i;"
 "			hit = h;"
 "		}"
 "	}"
+"}"
+
+
+
+/*
+ *Cook Torrence 
+ *
+ */
+
+ 
+"float saturate(float v)"
+"{"
+"	return clamp(v, 0.0f, 1.0f);"
 "}"
 
 "float chiGGX(float v)"
@@ -292,6 +325,40 @@ const std::string shaderSrc = ""
 "{"
 "  return F0 + (1-F0) * pow( 1 - cosT, 5);"
 "}"
+
+"vec3 GGX_Specular(vec3 normal, vec3 l0Vec, vec3 l1Vec, float roughness, vec3 F0, out vec3 kS)" //l0Vec first hit, l1Vec next outgoing 
+"{"
+"    vec3 reflectionVector = reflect(l0Vec, normal);"
+"    float  NoV = saturate(dot(normal, l0Vec));"
+
+	// Calculate the half vector
+"	vec3 halfVector = normalize(l1Vec + l0Vec);"
+"	float cosT = saturate(dot( l1Vec, normal ));"
+"	float sinT = sqrt( 1 - cosT * cosT);"
+	
+	// Calculate fresnel
+"	vec3 fresnel = Fresnel_Schlick( saturate(dot( halfVector, -l0Vec )), F0 );"
+	
+	// Geometry term
+"	float geometry = GGX_PartialGeometryTerm(-l0Vec, normal, halfVector, roughness) * GGX_PartialGeometryTerm(l1Vec, normal, halfVector, roughness);"
+	
+	// Calculate the Cook-Torrance denominator
+"	float denominator = saturate( 4 * (NoV * saturate(dot(halfVector, normal)) + 0.05) );"
+"	kS = fresnel;"
+	
+	// Accumulate the radiance
+"	vec3 radiance = geometry * fresnel * sinT / denominator;"
+
+    // final return values
+"   kS = clamp(kS, vec3(0.0f), vec3(1.0f));"
+"   return radiance;"
+"}"
+
+
+/*
+ *main
+ *
+ */
 
 
 "layout (local_size_x = 16, local_size_y = 16, local_size_z = 1) in;"
@@ -445,7 +512,6 @@ void Renderer::Render(Scene& scene)
 	{
 		randVec[i * 2 + 0] = randDist(randGenerator);
 		randVec[i * 2 + 1] = randDist(randGenerator);
-		//std::cout << "randVec:" << randVec[i * 2 + 0] << "," << randVec[i * 2 + 1] << std::endl; 
 	}
 	
 	GLComputeHelper::StorageBuffer<float> randNumSB(maxBounce * sampleCount * 2, 4, &randVec[0]); 
