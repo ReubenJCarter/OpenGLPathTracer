@@ -332,7 +332,7 @@ const std::string shaderSrc = ""
 "    float  NoV = saturate(dot(normal, l0Vec));"
 
 	// Calculate the half vector
-"	vec3 halfVector = normalize(l1Vec + l0Vec);"
+"	vec3 halfVector = normalize(l1Vec + -l0Vec);"
 "	float cosT = saturate(dot( l1Vec, normal ));"
 "	float sinT = sqrt( 1 - cosT * cosT);"
 	
@@ -343,7 +343,7 @@ const std::string shaderSrc = ""
 "	float geometry = GGX_PartialGeometryTerm(-l0Vec, normal, halfVector, roughness) * GGX_PartialGeometryTerm(l1Vec, normal, halfVector, roughness);"
 	
 	// Calculate the Cook-Torrance denominator
-"	float denominator = saturate( 4 * (NoV * saturate(dot(halfVector, normal)) + 0.05) );"
+"	float denominator = saturate( 4.0f * (NoV * saturate(dot(halfVector, normal)) + 0.05f) );"
 "	kS = fresnel;"
 	
 	// Accumulate the radiance
@@ -381,14 +381,12 @@ const std::string shaderSrc = ""
 
 "	for(int i = 0; i < maxBounce; i++)"
 "	{"
-"		vec3 materialEmittance;"
-"		vec3 materialColor;"
 "		RayIntersectBVH(rayOrig, rayDir, triangleIndex, hit);"
 "		Triangle tri; "
 "		if(triangleIndex < 0)"
 "		{"
 "			vec4 backgroundTex = textureLod(backgroundCube, rayDir, 0);"
-"			materialEmittance = backgroundTex.xyz * backgroundColor;"
+"			vec3 materialEmittance = backgroundTex.xyz * backgroundColor;"
 "			finalColor += runningBRDF * materialEmittance;"
 "			break;"
 "		}"
@@ -396,11 +394,11 @@ const std::string shaderSrc = ""
 "		{"
 "			tri = triangles[triangleIndex];"
 "			Material mat = materials[tri.mat];"
-"			materialEmittance = mat.emission.xyz;"
-"			materialColor = mat.materialColor.xyz;"
-"			float materialRoughness = 0.2f;"
+"			vec3 materialEmittance = mat.emission.xyz;"
+"			vec3 materialColor = mat.materialColor.xyz;"
+"			float materialRoughness = 0.01f;"
 "			float materialIOR = 0.2f;"
-"			float materialMetallic = 0.5f;"
+"			float materialMetallic = 0.4f;"
 
 "			Vertex vertA = verticies[tri.a];"
 "			Vertex vertB = verticies[tri.b];"
@@ -419,20 +417,20 @@ const std::string shaderSrc = ""
 "			vec3 newRayO = pos;"
 "			vec3 newRayD = RandomUnitHemi(Random(vec2(gl_GlobalInvocationID.xy), randNum[i + maxBounce * s]) * 2.0f - vec2(1.0f, 1.0f), norm);"
 
-"			float ior = 1.0f + 0.1f;"
-"			float roughness = saturate(0.5f);"
-"			float metallic = 0.4f;"
-"			vec3 F0 = vec3(abs ((1.0 - ior) / (1.0 + ior)));"
+"			float ior = 1.0f + materialIOR;"
+"			float roughness = saturate(materialRoughness);"
+"			float metallic = materialMetallic;"
+"			vec3 F0 = vec3(abs ((1.0f - ior) / (1.0f + ior)));"
 "			F0 = F0 * F0;"
 "			F0 = mix(F0, materialColor, metallic);"
 
 			// Calculate the specular contribution
 "			vec3 ks = vec3(0.0f);"
 "			vec3 specular = GGX_Specular(norm, rayDir, newRayD, roughness, F0, ks );"
-"			vec3 kd = (1 - ks) * (1 - metallic);"
+"			vec3 kd = (1.0f - ks) * (1.0f - metallic);"
 			// Calculate the diffuse contribution
 
-"			vec3 BRDF =  kd * (materialColor / PI) * max(0.0f, dot(newRayD, norm)) + specular;"
+"			vec3 BRDF =  kd * (materialColor) * max(0.0f, dot(newRayD, norm)) + specular;"
 
 "			finalColor += runningBRDF * materialEmittance;"
 
