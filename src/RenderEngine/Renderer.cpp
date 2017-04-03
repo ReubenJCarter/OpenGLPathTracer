@@ -33,12 +33,10 @@ const std::string shaderSrc = ""
 "\n#define PI 3.14159265359\n"
 
 
-
 /*
  *Randomness
  *
  */
-
 
 
 //http://amindforeverprogramming.blogspot.co.uk/2013/07/random-floats-in-glsl-330.html
@@ -92,12 +90,10 @@ const std::string shaderSrc = ""
 "}"
 
 
-
 /*
  *Definitions
  *
  */
-
 
 
 "struct Vertex"
@@ -286,13 +282,12 @@ const std::string shaderSrc = ""
 "}"
 
 
-
 /*
  *Cook Torrence 
  *
  */
 
- 
+
 "float saturate(float v)"
 "{"
 "	return clamp(v, 0.0f, 1.0f);"
@@ -397,8 +392,8 @@ const std::string shaderSrc = ""
 "			vec3 materialEmittance = mat.emission.xyz;"
 "			vec3 materialColor = mat.materialColor.xyz;"
 "			float materialRoughness = 0.01f;"
-"			float materialIOR = 0.2f;"
-"			float materialMetallic = 0.4f;"
+"			float materialIOR = 1.2f;"
+"			float materialMetallic = 0.99f;"
 
 "			Vertex vertA = verticies[tri.a];"
 "			Vertex vertB = verticies[tri.b];"
@@ -417,7 +412,7 @@ const std::string shaderSrc = ""
 "			vec3 newRayO = pos;"
 "			vec3 newRayD = RandomUnitHemi(Random(vec2(gl_GlobalInvocationID.xy), randNum[i + maxBounce * s]) * 2.0f - vec2(1.0f, 1.0f), norm);"
 
-"			float ior = 1.0f + materialIOR;"
+"			float ior =  materialIOR;"
 "			float roughness = saturate(materialRoughness);"
 "			float metallic = materialMetallic;"
 "			vec3 F0 = vec3(abs ((1.0f - ior) / (1.0f + ior)));"
@@ -430,7 +425,7 @@ const std::string shaderSrc = ""
 "			vec3 kd = (1.0f - ks) * (1.0f - metallic);"
 			// Calculate the diffuse contribution
 
-"			vec3 BRDF =  kd * (materialColor) * max(0.0f, dot(newRayD, norm)) + specular;"
+"			vec3 BRDF = (kd * (materialColor / PI) * max(0.0f, dot(newRayD, norm)) + ks * specular) ;"
 
 "			finalColor += runningBRDF * materialEmittance;"
 
