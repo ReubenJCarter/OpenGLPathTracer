@@ -321,21 +321,20 @@ const std::string shaderSrc = ""
 "  return F0 + (1-F0) * pow( 1 - cosT, 5);"
 "}"
 
-"vec3 GGX_Specular(vec3 normal, vec3 l0Vec, vec3 l1Vec, float roughness, vec3 F0, out vec3 kS)" //l0Vec first hit, l1Vec next outgoing 
+"vec3 GGX_Specular(vec3 normal, vec3 viewVector, vec3 lightVector, float roughness, vec3 F0, out vec3 kS)"
 "{"
-"    vec3 reflectionVector = reflect(l0Vec, normal);"
-"    float  NoV = saturate(dot(normal, l0Vec));"
+"    float  NoV = saturate(dot(normal, viewVector));"
 
 	// Calculate the half vector
-"	vec3 halfVector = normalize(l1Vec + -l0Vec);"
-"	float cosT = saturate(dot( l1Vec, normal ));"
+"	vec3 halfVector = normalize(lightVector + viewVector);"
+"	float cosT = saturate(dot( lightVector, normal ));"
 "	float sinT = sqrt( 1 - cosT * cosT);"
 	
 	// Calculate fresnel
-"	vec3 fresnel = Fresnel_Schlick( saturate(dot( halfVector, -l0Vec )), F0 );"
+"	vec3 fresnel = Fresnel_Schlick( saturate(dot( halfVector, viewVector )), F0 );"
 	
 	// Geometry term
-"	float geometry = GGX_PartialGeometryTerm(-l0Vec, normal, halfVector, roughness) * GGX_PartialGeometryTerm(l1Vec, normal, halfVector, roughness);"
+"	float geometry = GGX_PartialGeometryTerm(viewVector, normal, halfVector, roughness) * GGX_PartialGeometryTerm(lightVector, normal, halfVector, roughness);"
 	
 	// Calculate the Cook-Torrance denominator
 "	float denominator = saturate( 4.0f * (NoV * saturate(dot(halfVector, normal)) + 0.05f) );"
@@ -391,8 +390,8 @@ const std::string shaderSrc = ""
 "			Material mat = materials[tri.mat];"
 "			vec3 materialEmittance = mat.emission.xyz;"
 "			vec3 materialColor = mat.materialColor.xyz;"
-"			float materialRoughness = 0.01f;"
-"			float materialIOR = 1.2f;"
+"			float materialRoughness = 0.5f;"
+"			float materialIOR = 1.0f;"
 "			float materialMetallic = 0.99f;"
 
 "			Vertex vertA = verticies[tri.a];"
@@ -421,11 +420,13 @@ const std::string shaderSrc = ""
 
 			// Calculate the specular contribution
 "			vec3 ks = vec3(0.0f);"
-"			vec3 specular = GGX_Specular(norm, rayDir, newRayD, roughness, F0, ks );"
+"			vec3 specular = GGX_Specular(norm, -rayDir, newRayD, roughness, F0, ks );"
 "			vec3 kd = (1.0f - ks) * (1.0f - metallic);"
 			// Calculate the diffuse contribution
 
-"			vec3 BRDF = (kd * (materialColor / PI) * max(0.0f, dot(newRayD, norm)) + ks * specular) ;"
+"			vec3 BRDF = (kd * (materialColor / PI) * max(0.0f, dot(newRayD, norm)) + specular) ;"
+//"			vec3 BRDF = 0.0f * materialColor * max(0.0f, dot(newRayD, norm)) + 1.0f * materialColor * pow(max(0.0f, dot(reflect(-newRayD, norm), -rayDir)), 15.0f) * 15.0f;"
+//"			vec3 BRDF = materialColor * max(0.0f, dot(newRayD, norm));"
 
 "			finalColor += runningBRDF * materialEmittance;"
 
