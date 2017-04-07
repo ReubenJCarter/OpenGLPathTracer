@@ -425,7 +425,8 @@ const std::string shaderSrc = ""
 "			vec3 specular = GGX_Specular(norm, -rayDir, newRayD, materialRoughness, F0, ks );"
 "			vec3 kd = (1.0f - ks) * (1.0f - materialMetallic);"
 
-"			vec3 reflectanceFactor = (kd * materialColor / PI * max(0.0f, dot(newRayD, norm)) + specular) / (1.0f / (2.0f * PI));"
+//"			vec3 reflectanceFactor = (kd * materialColor / PI * max(0.0f, dot(newRayD, norm)) + specular) / (1.0f / (2.0f * PI));"
+"			vec3 reflectanceFactor = (kd * materialColor / PI * max(0.0f, dot(newRayD, norm))) / (1.0f / (2.0f * PI));"
 
 "			finalColor += runningReflectanceFactor * materialEmittance;"
 
