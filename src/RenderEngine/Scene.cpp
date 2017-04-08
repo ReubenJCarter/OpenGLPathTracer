@@ -61,6 +61,8 @@ bool Scene::AddModelFromFile(const std::string fileName)
 	
 	//get material data
 	int materialNumPrev = materials.size();
+	int imageNumPrev = imageFileNames.size();
+	int imaggeInx = 0;
 	materials.resize(materialNumPrev + scn->mNumMaterials);
 	for(int i = 0; i < scn->mNumMaterials; i++)
 	{
@@ -70,15 +72,27 @@ bool Scene::AddModelFromFile(const std::string fileName)
 		aiColor3D emissiveColor(0.0f, 0.0f, 0.0f);
 		material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
 		material->Get(AI_MATKEY_COLOR_EMISSIVE, emissiveColor);
-		materials[inx].reflectance[0] = diffuseColor.r; 
-		materials[inx].reflectance[1] = diffuseColor.g; 
-		materials[inx].reflectance[2] = diffuseColor.b;
-		materials[inx].reflectance[3] = 1.0f;		 		
+		materials[inx].color[0] = diffuseColor.r; 
+		materials[inx].color[1] = diffuseColor.g; 
+		materials[inx].color[2] = diffuseColor.b;
+		materials[inx].color[3] = 1.0f;		 		
 		materials[inx].emission[0] = emissiveColor.r; 
 		materials[inx].emission[1] = emissiveColor.g; 
 		materials[inx].emission[2] = emissiveColor.b;
 		materials[inx].emission[3] = 1.0f;
+		
+		//for all textures in materrial
+		
+			//tinx=texfnlist.find(fn);
+			//if texture filename not in list already 
+				//add filename to fn listt
+				//tinx=last
+			
+			//set material textture inx to tinx
 	}
+	
+	//load new textures
+	
 	
 	//get mesh data
 	for(int i = 0; i < scn->mNumMeshes; i++)
@@ -138,6 +152,11 @@ bool Scene::BackgroundCubeImageFromFile(std::string fileName[6])
 void Scene::RebuildBVH(int maxdepth)
 {
 	bvh.Build(triangles, verticies, maxdepth);
+}
+
+void AllocateTextures()
+{
+	
 }
 
 void Scene::AllocateGPUBuffers()

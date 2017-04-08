@@ -67,7 +67,7 @@ struct Triangle
  
 struct Material
 {
-	float reflectance[4];
+	float color[4];
 	float emission[4];
 	int textureIndex[4];
 };

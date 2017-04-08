@@ -6,10 +6,6 @@ add_executable(BVHTest BVHTest.cpp)
 target_link_libraries(BVHTest GLComputeHelper)
 target_link_libraries(BVHTest RenderEngine)
 
-add_executable(RayTracingTest RayTracingTest.cpp)
-target_link_libraries(RayTracingTest GLComputeHelper)
-target_link_libraries(RayTracingTest RenderEngine)
-
 add_executable(RendererTest RendererTest.cpp)
 target_link_libraries(RendererTest GLComputeHelper)
 target_link_libraries(RendererTest RenderEngine)

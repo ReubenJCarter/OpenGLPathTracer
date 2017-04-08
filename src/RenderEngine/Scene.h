@@ -38,7 +38,11 @@ class Scene
 		std::vector<Vertex> verticies;
 		std::vector<Triangle> triangles;
 		std::vector<Material> materials;
+		std::vector<std::string> imageFileNames;
 		std::vector<Image> images;
+		float backgroundColor[3];
+		Image backgroundCubeImages[6]; 
+		
 		GLComputeHelper::StorageBuffer<Vertex> verticiesSB;
 		GLComputeHelper::StorageBuffer<Triangle> trianglesSB;
 		GLComputeHelper::StorageBuffer<Material> materialsSB;
@@ -48,8 +52,6 @@ class Scene
 		GLComputeHelper::BufferTexture trianglesBT;
 		GLComputeHelper::BufferTexture bvhBT;
 		std::vector<GLComputeHelper::Texture> textures;
-		float backgroundColor[3];
-		Image backgroundCubeImages[6]; 
 		GLComputeHelper::Texture backgroundCubeTexture;
 	
 		Scene();	
