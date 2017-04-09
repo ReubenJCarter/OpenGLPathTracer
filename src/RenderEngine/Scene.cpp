@@ -4,6 +4,7 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
 #include <iostream>
+#include <algorithm>
 
 
 /**
@@ -62,7 +63,7 @@ bool Scene::AddModelFromFile(const std::string fileName)
 	//get material data
 	int materialNumPrev = materials.size();
 	int imageNumPrev = imageFileNames.size();
-	int imaggeInx = 0;
+	int imageInx = 0;
 	materials.resize(materialNumPrev + scn->mNumMaterials);
 	for(int i = 0; i < scn->mNumMaterials; i++)
 	{
@@ -82,17 +83,40 @@ bool Scene::AddModelFromFile(const std::string fileName)
 		materials[inx].emission[3] = 1.0f;
 		
 		//for all textures in materrial
-		
-			//tinx=texfnlist.find(fn);
-			//if texture filename not in list already 
-				//add filename to fn listt
-				//tinx=last
-			
-			//set material textture inx to tinx
+		int materialTextureNumber = material->GetTextureCount(aiTextureType_DIFFUSE);
+		for(int j = 0; j < materialTextureNumber && i < 1; j++)
+		{
+			aiString aipath;
+			if(material->GetTexture(aiTextureType_DIFFUSE, 0, &aipath, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+			{
+				int tinx;
+				std::string texPath = aipath.C_Str();
+				std::vector<std::string>::iterator it;
+				it = std::find (imageFileNames.begin(), imageFileNames.end(), texPath);
+				if (it != imageFileNames.end())//image already in image list 
+				{
+					tinx = it - imageFileNames.begin();
+				}
+				else //image not present in list
+				{
+					imageFileNames.push_back(texPath);
+					tinx = imageFileNames.size() - 1;
+				}
+				materials[inx].textureIndex[0] = tinx;
+			}
+			else
+			{
+				
+			}
+		}
 	}
 	
 	//load new textures
-	
+	images.resize(imageFileNames.size());
+	for(int i = imageNumPrev; i < imageFileNames.size(); i++)
+	{
+		images[i].FromFile(imageFileNames[i]);
+	}
 	
 	//get mesh data
 	for(int i = 0; i < scn->mNumMeshes; i++)
