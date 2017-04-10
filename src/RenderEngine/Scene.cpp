@@ -63,7 +63,6 @@ bool Scene::AddModelFromFile(const std::string fileName)
 	//get material data
 	int materialNumPrev = materials.size();
 	int imageNumPrev = imageFileNames.size();
-	int imageInx = 0;
 	materials.resize(materialNumPrev + scn->mNumMaterials);
 	for(int i = 0; i < scn->mNumMaterials; i++)
 	{
@@ -82,9 +81,9 @@ bool Scene::AddModelFromFile(const std::string fileName)
 		materials[inx].emission[2] = emissiveColor.b;
 		materials[inx].emission[3] = 1.0f;
 		
-		//for all textures in materrial
+		//for all diffuse textures in material
 		int materialTextureNumber = material->GetTextureCount(aiTextureType_DIFFUSE);
-		for(int j = 0; j < materialTextureNumber && i < 1; j++)
+		for(int j = 0; j < materialTextureNumber && j < 1; j++)
 		{
 			aiString aipath;
 			if(material->GetTexture(aiTextureType_DIFFUSE, 0, &aipath, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
@@ -119,6 +118,7 @@ bool Scene::AddModelFromFile(const std::string fileName)
 	}
 	
 	//get mesh data
+	const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
 	for(int i = 0; i < scn->mNumMeshes; i++)
 	{
 		int vNumPrev = verticies.size();
@@ -134,6 +134,17 @@ bool Scene::AddModelFromFile(const std::string fileName)
 			verticies[inx].norm[0] = mesh->mNormals[j].x;
 			verticies[inx].norm[1] = mesh->mNormals[j].y;
 			verticies[inx].norm[2] = mesh->mNormals[j].z;
+			verticies[inx].tang[0] = mesh->mTangents[j].x;
+			verticies[inx].tang[1] = mesh->mTangents[j].y;
+			verticies[inx].tang[2] = mesh->mTangents[j].z;
+			const aiVector3D* texco;
+			const aiVector3D* texco2;
+			texco = (mesh->HasTextureCoords(0)) ? &(mesh->mTextureCoords[0][j]) : &Zero3D;
+			texco2 = (mesh->HasTextureCoords(1)) ? &(mesh->mTextureCoords[1][j]) : &Zero3D;
+			verticies[inx].uv[0] = texco->x;
+			verticies[inx].uv[1] = texco->y;
+			verticies[inx].uv[2] = texco2->x;
+			verticies[inx].uv[3] = texco2->y;
 		}
 		triangles.resize(tNumPrev + mesh->mNumFaces);
 		for(int j = 0; j < mesh->mNumFaces; j++)

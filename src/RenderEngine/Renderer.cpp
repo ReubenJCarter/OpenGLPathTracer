@@ -323,7 +323,7 @@ const std::string shaderSrc = ""
 
 "vec3 Fresnel_Schlick(vec3 halfVector, vec3 viewVector, vec3 F0)"
 "{"
-"  return F0 + (1-F0) * pow( 1 - saturate(dot( halfVector, viewVector )), 5);"
+"  return F0 + (1.0f - F0) * pow( 1.0f - saturate(dot( halfVector, viewVector )), 5);"
 "}"
 
 "vec3 GGX_Specular(vec3 normal, vec3 viewVector, vec3 lightVector, float roughness, vec3 F0, out vec3 kS)"
@@ -398,7 +398,7 @@ const std::string shaderSrc = ""
 "			vec3 materialEmittance = mat.emission.xyz;"
 "			vec3 materialColor = mat.materialColor.xyz;"
 "			float materialRoughness = 0.01f;"
-"			float materialIOR = 1.350f;"
+"			float materialIOR = 1.250f;"
 "			float materialMetallic = 0.001f;"
 
 "			Vertex vertA = verticies[tri.a];"
@@ -425,8 +425,8 @@ const std::string shaderSrc = ""
 "			vec3 specular = GGX_Specular(norm, -rayDir, newRayD, materialRoughness, F0, ks );"
 "			vec3 kd = (1.0f - ks) * (1.0f - materialMetallic);"
 
-//"			vec3 reflectanceFactor = (kd * materialColor / PI * max(0.0f, dot(newRayD, norm)) + specular) / (1.0f / (2.0f * PI));"
-"			vec3 reflectanceFactor = (kd * materialColor / PI * max(0.0f, dot(newRayD, norm))) / (1.0f / (2.0f * PI));"
+"			vec3 reflectanceFactor = ((kd * materialColor / PI * max(0.0f, dot(newRayD, norm))) + specular) / (1.0f / (2.0f * PI));"
+//"			vec3 reflectanceFactor = (kd * materialColor / PI * max(0.0f, dot(newRayD, norm))) / (1.0f / (2.0f * PI));"//pure diffuse 
 
 "			finalColor += runningReflectanceFactor * materialEmittance;"
 
