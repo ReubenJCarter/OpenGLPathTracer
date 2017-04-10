@@ -134,9 +134,9 @@ bool Scene::AddModelFromFile(const std::string fileName)
 			verticies[inx].norm[0] = mesh->mNormals[j].x;
 			verticies[inx].norm[1] = mesh->mNormals[j].y;
 			verticies[inx].norm[2] = mesh->mNormals[j].z;
-			verticies[inx].tang[0] = mesh->mTangents[j].x;
-			verticies[inx].tang[1] = mesh->mTangents[j].y;
-			verticies[inx].tang[2] = mesh->mTangents[j].z;
+			//verticies[inx].tang[0] = mesh->mTangents[j].x;
+			//verticies[inx].tang[1] = mesh->mTangents[j].y;
+			//verticies[inx].tang[2] = mesh->mTangents[j].z;
 			const aiVector3D* texco;
 			const aiVector3D* texco2;
 			texco = (mesh->HasTextureCoords(0)) ? &(mesh->mTextureCoords[0][j]) : &Zero3D;
@@ -178,10 +178,6 @@ bool Scene::BackgroundCubeImageFromFile(std::string fileName[6])
 		width = w;
 		height = h;
 	}
-	
-	backgroundCubeTexture.Allocate(width, height, GLComputeHelper::Texture::CUBE_MAP, GLComputeHelper::Texture::RGBA8, NULL, GLComputeHelper::Texture::CLAMP_TO_EDGE);
-	backgroundCubeTexture.CopyCube(backgroundCubeImages[0].Data(), backgroundCubeImages[1].Data(), backgroundCubeImages[2].Data(),
-								   backgroundCubeImages[3].Data(), backgroundCubeImages[4].Data(), backgroundCubeImages[5].Data());
 }
 
 void Scene::RebuildBVH(int maxdepth)
@@ -189,9 +185,17 @@ void Scene::RebuildBVH(int maxdepth)
 	bvh.Build(triangles, verticies, maxdepth);
 }
 
-void AllocateTextures()
+void Scene::AllocateTextures()
 {
-	
+	backgroundCubeTexture.Allocate(backgroundCubeImages[0].GetWidth(), backgroundCubeImages[0].GetHeight(), GLComputeHelper::Texture::CUBE_MAP, GLComputeHelper::Texture::RGBA8, NULL, GLComputeHelper::Texture::CLAMP_TO_EDGE);
+	backgroundCubeTexture.CopyCube(backgroundCubeImages[0].Data(), backgroundCubeImages[1].Data(), backgroundCubeImages[2].Data(),
+								   backgroundCubeImages[3].Data(), backgroundCubeImages[4].Data(), backgroundCubeImages[5].Data());
+								   
+	textures.resize(images.size());
+	for(int i = 0; i < images.size(); i++)
+	{
+		textures[i].Allocate(images[i].GetWidth(), images[i].GetHeight(), GLComputeHelper::Texture::TEXTURE_2D, GLComputeHelper::Texture::RGBA32F, images[i].Data());
+	}
 }
 
 void Scene::AllocateGPUBuffers()

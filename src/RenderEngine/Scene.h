@@ -41,7 +41,7 @@ class Scene
 		std::vector<std::string> imageFileNames;
 		std::vector<Image> images;
 		float backgroundColor[3];
-		Image backgroundCubeImages[6]; 
+		Image backgroundCubeImages[6]; 		
 		
 		GLComputeHelper::StorageBuffer<Vertex> verticiesSB;
 		GLComputeHelper::StorageBuffer<Triangle> trianglesSB;
@@ -59,6 +59,7 @@ class Scene
 		bool AddModelFromFile(std::string fileName);
 		bool BackgroundCubeImageFromFile(std::string fileName[6]);
 		void RebuildBVH(int maxdepth=64);
+		void AllocateTextures();
 		void AllocateGPUBuffers();
 		void AllocateGPUBufferTextures();
 };
