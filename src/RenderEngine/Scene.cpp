@@ -199,7 +199,8 @@ void Scene::AllocateTextures()
 	textures.resize(images.size());
 	for(int i = 0; i < images.size(); i++)
 	{
-		textures[i].Allocate(images[i].GetWidth(), images[i].GetHeight(), GLComputeHelper::ShaderImage::RGBA32F, images[i].Data());
+		textures[i].Allocate(images[i].GetWidth(), images[i].GetHeight(), GLComputeHelper::ShaderImage::RGBA8);
+		textures[i].Copy(images[i].Data(), images[i].GetWidth(), images[i].GetHeight(), 0, 0); 
 	}
 }
 

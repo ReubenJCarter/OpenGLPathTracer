@@ -8,6 +8,7 @@
 #include <random>
 #include <sstream>
 #include "ShaderCommon.h"
+#include "GLComputeHelper/Util.h"
 
 
 /**
@@ -133,7 +134,7 @@ const std::string shaderSrc = ""
 "	ivec4 textureIndex;"
 "};"
 
-"layout(rgba32f) uniform image2D outputImage;"
+"layout(rgba32f, binding=0) uniform image2D outputImage;"
 
 "layout (std430, binding=0) readonly buffer verticiesSB"
 "{"
@@ -180,7 +181,8 @@ const std::string shaderSrc = ""
 "uniform float clearTarget;"
 
 "uniform int textureCount;"
-"layout(rgba32f) uniform image2D textures[10];"
+//"layout(rgba32f) uniform image2D textures[10];"
+"layout (rgba32f, binding=1) uniform image2D diffuseTex;"
 
 
 /*
@@ -423,9 +425,12 @@ const std::string shaderSrc = ""
 
 "			if(mat.textureIndex.x > -1)"
 "			{"
-"				ivec2 imgSize = imageSize(textures[mat.textureIndex.x]);"
+//"				ivec2 imgSize = imageSize(textures[mat.textureIndex.x]);"
+//"				ivec2 pixelCoord = ivec2(uv0.x * imgSize.x, uv0.y * imgSize.y);"
+//"				materialColor *= imageLoad(textures[mat.textureIndex.x], pixelCoord).xyz;"
+"				ivec2 imgSize = imageSize(diffuseTex);"
 "				ivec2 pixelCoord = ivec2(uv0.x * imgSize.x, uv0.y * imgSize.y);"
-"				materialColor *= imageLoad(textures[mat.textureIndex.x], pixelCoord).xyz;"
+"				materialColor *= imageLoad(diffuseTex, pixelCoord).xyz;"
 "			}"
 
 "			vec3 newRayO = pos;"
@@ -525,7 +530,8 @@ void Renderer::Render(Scene& scene)
 	{
 		std::stringstream ss;
 		ss << "textures[" << i << "]";
-		renderShader.SetImage(ss.str(), scene.textures[i]);
+		//renderShader.SetImage(ss.str(), scene.textures[i]);
+		renderShader.SetImage("diffuseTex", scene.textures[i]);
 	}
 	
 	float camPos[] = {scene.camera.position.x, scene.camera.position.y, scene.camera.position.z};
