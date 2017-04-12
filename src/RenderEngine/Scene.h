@@ -10,6 +10,7 @@
 #include "GLComputeHelper/StorageBuffer.h"
 #include "GLComputeHelper/Texture.h"
 #include "GLComputeHelper/BufferTexture.h"
+#include "GLComputeHelper/ShaderImage.h"
 
 
 /**
@@ -51,7 +52,7 @@ class Scene
 		GLComputeHelper::BufferTexture verticiesNormBT;
 		GLComputeHelper::BufferTexture trianglesBT;
 		GLComputeHelper::BufferTexture bvhBT;
-		std::vector<GLComputeHelper::Texture> textures;
+		std::vector<GLComputeHelper::ShaderImage> textures;
 		GLComputeHelper::Texture backgroundCubeTexture;
 	
 		Scene();	

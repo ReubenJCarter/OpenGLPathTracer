@@ -6,6 +6,7 @@
 #include <iostream>
 #include <chrono>
 #include <random>
+#include <sstream>
 #include "ShaderCommon.h"
 
 
@@ -177,6 +178,9 @@ const std::string shaderSrc = ""
 "uniform mat3 cameraRotation;"
 
 "uniform float clearTarget;"
+
+"uniform int textureCount;"
+"layout(rgba32f) uniform image2D textures[10];"
 
 
 /*
@@ -412,6 +416,17 @@ const std::string shaderSrc = ""
 "			vec3 posb = vertB.pos.xyz;"
 "			vec3 posc = vertC.pos.xyz;"
 "			vec3 pos = vec3(posa * hit.x + posb * hit.y + posc * hit.z);"
+"			vec2 uv0a = vertA.uv.xy;"
+"			vec2 uv0b = vertB.uv.xy;"
+"			vec2 uv0c = vertC.uv.xy;"
+"			vec2 uv0 = vec2(uv0a * hit.x + uv0b * hit.y + uv0c * hit.z);"
+
+"			if(mat.textureIndex.x > -1)"
+"			{"
+"				ivec2 imgSize = imageSize(textures[mat.textureIndex.x]);"
+"				ivec2 pixelCoord = ivec2(uv0.x * imgSize.x, uv0.y * imgSize.y);"
+"				materialColor *= imageLoad(textures[mat.textureIndex.x], pixelCoord).xyz;"
+"			}"
 
 "			vec3 newRayO = pos;"
 "			vec3 newRayD = RandomUnitHemi(Random(vec2(gl_GlobalInvocationID.xy), randNum[i + maxBounce * s]) * 2.0f - vec2(1.0f, 1.0f), norm);"
@@ -484,10 +499,10 @@ void Renderer::Render(Scene& scene)
 	renderShader.SetStorageBuffer<BVH::BVHNode>("bvhSB", scene.bvhSB);
 	renderShader.SetStorageBuffer<Material>("materialsSB", scene.materialsSB);
 	
-	renderShader.SetBufferTexture("verticiesPosBT", scene.verticiesPosBT, 5);
-	renderShader.SetBufferTexture("verticiesNormBT", scene.verticiesNormBT, 6);
-	renderShader.SetBufferTexture("trianglesBT", scene.trianglesBT, 7);
-	renderShader.SetBufferTexture("bvhBT", scene.bvhBT, 8);
+	renderShader.SetBufferTexture("verticiesPosBT", scene.verticiesPosBT, 0);
+	renderShader.SetBufferTexture("verticiesNormBT", scene.verticiesNormBT, 1);
+	renderShader.SetBufferTexture("trianglesBT", scene.trianglesBT, 2);
+	renderShader.SetBufferTexture("bvhBT", scene.bvhBT, 3);
 	
 	renderShader.SetInt("triangleCount", scene.trianglesSB.Size());
 	renderShader.SetInt("nodeCount", scene.bvhSB.Size());
@@ -503,6 +518,14 @@ void Renderer::Render(Scene& scene)
 	else
 	{
 		renderShader.SetFloat("clearTarget", 1.0f);
+	}
+	
+	renderShader.SetInt("textureCount", scene.textures.size());
+	for(int i = 0; i < scene.textures.size(); i++)
+	{
+		std::stringstream ss;
+		ss << "textures[" << i << "]";
+		renderShader.SetImage(ss.str(), scene.textures[i]);
 	}
 	
 	float camPos[] = {scene.camera.position.x, scene.camera.position.y, scene.camera.position.z};
@@ -525,7 +548,7 @@ void Renderer::Render(Scene& scene)
 	renderShader.SetStorageBuffer<float>("randNumSB", randNumSB);
 	
 	renderShader.SetFloat3("backgroundColor", scene.backgroundColor);
-	renderShader.SetTexture("backgroundCube", scene.backgroundCubeTexture, 10);
+	renderShader.SetTexture("backgroundCube", scene.backgroundCubeTexture, 4);
 	
 	int targetSize[] = {shaderImage.GetWidth(), shaderImage.GetHeight()};
 	renderShader.SetInt2("targetSize", targetSize);

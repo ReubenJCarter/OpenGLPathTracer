@@ -82,6 +82,10 @@ bool Scene::AddModelFromFile(const std::string fileName)
 		materials[inx].emission[3] = 1.0f;
 		
 		//for all diffuse textures in material
+		materials[inx].textureIndex[0] = -1;//diffuse texture
+		materials[inx].textureIndex[1] = -1;
+		materials[inx].textureIndex[2] = -1;
+		materials[inx].textureIndex[3] = -1;
 		int materialTextureNumber = material->GetTextureCount(aiTextureType_DIFFUSE);
 		for(int j = 0; j < materialTextureNumber && j < 1; j++)
 		{
@@ -115,6 +119,7 @@ bool Scene::AddModelFromFile(const std::string fileName)
 	for(int i = imageNumPrev; i < imageFileNames.size(); i++)
 	{
 		images[i].FromFile(imageFileNames[i]);
+		std::cout << "Loaded Image:" << imageFileNames[i] << std::endl;
 	}
 	
 	//get mesh data
@@ -194,7 +199,7 @@ void Scene::AllocateTextures()
 	textures.resize(images.size());
 	for(int i = 0; i < images.size(); i++)
 	{
-		textures[i].Allocate(images[i].GetWidth(), images[i].GetHeight(), GLComputeHelper::Texture::TEXTURE_2D, GLComputeHelper::Texture::RGBA32F, images[i].Data());
+		textures[i].Allocate(images[i].GetWidth(), images[i].GetHeight(), GLComputeHelper::ShaderImage::RGBA32F, images[i].Data());
 	}
 }
 
