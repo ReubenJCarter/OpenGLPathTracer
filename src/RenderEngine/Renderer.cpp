@@ -181,8 +181,8 @@ const std::string shaderSrc = ""
 "uniform float clearTarget;"
 
 "uniform int textureCount;"
-//"layout(rgba32f) uniform image2D textures[10];"
-"layout (rgba32f, binding=1) uniform image2D diffuseTex;"
+"layout(rgba32f, binding=1) uniform image2D textures[20];"
+//"layout (rgba32f, binding=1) uniform image2D diffuseTex;"
 
 
 /*
@@ -403,7 +403,7 @@ const std::string shaderSrc = ""
 
 "			vec3 materialEmittance = mat.emission.xyz;"
 "			vec3 materialColor = mat.materialColor.xyz;"
-"			float materialRoughness = 0.01f;"
+"			float materialRoughness = 0.2f;"
 "			float materialIOR = 1.250f;"
 "			float materialMetallic = 0.001f;"
 
@@ -425,12 +425,12 @@ const std::string shaderSrc = ""
 
 "			if(mat.textureIndex.x > -1)"
 "			{"
-//"				ivec2 imgSize = imageSize(textures[mat.textureIndex.x]);"
-//"				ivec2 pixelCoord = ivec2(uv0.x * imgSize.x, uv0.y * imgSize.y);"
-//"				materialColor *= imageLoad(textures[mat.textureIndex.x], pixelCoord).xyz;"
-"				ivec2 imgSize = imageSize(diffuseTex);"
+"				ivec2 imgSize = imageSize(textures[mat.textureIndex.x]);"
 "				ivec2 pixelCoord = ivec2(uv0.x * imgSize.x, uv0.y * imgSize.y);"
-"				materialColor *= imageLoad(diffuseTex, pixelCoord).xyz;"
+"				materialColor *= imageLoad(textures[mat.textureIndex.x], pixelCoord).xyz;"
+//"				ivec2 imgSize = imageSize(diffuseTex);"
+//"				ivec2 pixelCoord = ivec2(uv0.x * imgSize.x, uv0.y * imgSize.y);"
+//"				materialColor *= imageLoad(diffuseTex, pixelCoord).xyz;"
 "			}"
 
 "			vec3 newRayO = pos;"
@@ -530,8 +530,8 @@ void Renderer::Render(Scene& scene)
 	{
 		std::stringstream ss;
 		ss << "textures[" << i << "]";
-		//renderShader.SetImage(ss.str(), scene.textures[i]);
-		renderShader.SetImage("diffuseTex", scene.textures[i]);
+		renderShader.SetImage(ss.str(), scene.textures[i]);
+		//renderShader.SetImage("diffuseTex", scene.textures[i]);
 	}
 	
 	float camPos[] = {scene.camera.position.x, scene.camera.position.y, scene.camera.position.z};

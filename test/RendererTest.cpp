@@ -26,8 +26,8 @@ int main(int argc, char* argv[])
 	
 	Scene scene(argv[1]);
 	//std::string cubeIm[] = {"cubemap/Park2/negx.jpg", "cubemap/Park2/posx.jpg", "cubemap/Park2/posy.jpg", "cubemap/Park2/negy.jpg", "cubemap/Park2/negz.jpg", "cubemap/Park2/posz.jpg"};
-	//std::string cubeIm[] = {"cubemap/Creek/negx.jpg", "cubemap/Creek/posx.jpg", "cubemap/Creek/posy.jpg", "cubemap/Creek/negy.jpg", "cubemap/Creek/negz.jpg", "cubemap/Creek/posz.jpg"};
-	std::string cubeIm[] = {"cubemap/SwedishRoyalCastle/negx.jpg", "cubemap/SwedishRoyalCastle/posx.jpg", "cubemap/SwedishRoyalCastle/posy.jpg", "cubemap/SwedishRoyalCastle/negy.jpg", "cubemap/SwedishRoyalCastle/negz.jpg", "cubemap/SwedishRoyalCastle/posz.jpg"};
+	std::string cubeIm[] = {"cubemap/Creek/negx.jpg", "cubemap/Creek/posx.jpg", "cubemap/Creek/posy.jpg", "cubemap/Creek/negy.jpg", "cubemap/Creek/negz.jpg", "cubemap/Creek/posz.jpg"};
+	//std::string cubeIm[] = {"cubemap/SwedishRoyalCastle/negx.jpg", "cubemap/SwedishRoyalCastle/posx.jpg", "cubemap/SwedishRoyalCastle/posy.jpg", "cubemap/SwedishRoyalCastle/negy.jpg", "cubemap/SwedishRoyalCastle/negz.jpg", "cubemap/SwedishRoyalCastle/posz.jpg"};
 	//std::string cubeIm[] = {"cubemap/Vasa/negx.jpg", "cubemap/Vasa/posx.jpg", "cubemap/Vasa/posy.jpg", "cubemap/Vasa/negy.jpg", "cubemap/Vasa/negz.jpg", "cubemap/Vasa/posz.jpg"};
 	scene.BackgroundCubeImageFromFile(cubeIm);
 	
@@ -60,6 +60,9 @@ int main(int argc, char* argv[])
 	//DRAGON
 	//scene.camera.position = glm::vec3(0.0f, 5.0f, 9.0f);
 	//scene.camera.rotation = glm::vec3(0.0f, 3.141f, 0.0f);
+	//sponza
+	scene.camera.position = glm::vec3(3.51846, 8.35253, -0.20819);
+	scene.camera.rotation = glm::vec3(0.0f, -3.141f/2, 0);
 	
 	if(argc >= 8)
 	{
