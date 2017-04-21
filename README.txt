@@ -33,3 +33,21 @@ Speeding up BVH intersect
 -layout triangles / verticies better?
 -Bredth first data layout better for cache? bredth first search?
 -improve BVH generate?
+
+
+Reading List
+
+Megakernels Considered Harmful: Wavefront Path Tracing on GPUs
+
+Realtime Ray Tracing on GPU with BVH-based Packet Traversal
+
+Understanding the Efficiency of Ray Traversal on GPUs
+
+Spatial Splits in Bounding Volume Hierarchies
+
+
+http://www.cs.uu.nl/docs/vakken/magr/portfolio/
+
+http://www.cs.uu.nl/docs/vakken/magr/portfolio/INFOMAGR/lecture11.pdf
+http://www.cs.uu.nl/docs/vakken/magr/portfolio/INFOMAGR/lecture12.pdf
+http://www.cs.uu.nl/docs/vakken/magr/portfolio/CTU/lecture4.pdf

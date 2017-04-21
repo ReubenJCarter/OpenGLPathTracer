@@ -61,8 +61,8 @@ int main(int argc, char* argv[])
 	//scene.camera.position = glm::vec3(0.0f, 5.0f, 9.0f);
 	//scene.camera.rotation = glm::vec3(0.0f, 3.141f, 0.0f);
 	//sponza
-	scene.camera.position = glm::vec3(3.51846, 8.35253, -0.20819);
-	scene.camera.rotation = glm::vec3(0.0f, -3.141f/2, 0);
+	//scene.camera.position = glm::vec3(3.51846, 8.35253, -0.20819);
+	//scene.camera.rotation = glm::vec3(0.0f, -3.141f/2, 0);
 	
 	if(argc >= 8)
 	{

@@ -182,7 +182,6 @@ const std::string shaderSrc = ""
 
 "uniform int textureCount;"
 "layout(rgba32f, binding=1) uniform image2D textures[20];"
-//"layout (rgba32f, binding=1) uniform image2D diffuseTex;"
 
 
 /*
@@ -254,6 +253,149 @@ const std::string shaderSrc = ""
 "	}"
 "}"
 
+
+"void RayIntersectBVHStackBased(vec3 rayOrig, vec3 rayDir, out int triIndex, out vec4 hit)"
+"{"
+"	vec4 hitTemp;"
+"	vec3 rayDirInv = vec3(1.0f, 1.0f, 1.0f) / rayDir;"
+"	float dist = 1e10;"
+"	triIndex = -1;"
+"	int nodeIndex = 0;"
+"	int stack[128];"
+"	int stackPtr = 0;"
+"	stack[0] = 0;"
+
+	//while stack not empty
+"	while(stackPtr >= 0)"
+"	{"
+		//pop node from stack
+"		nodeIndex = stack[stackPtr--];"
+
+		//get node data
+"		ivec4 n0 = texelFetch(bvhBT, nodeIndex * 2);"
+"		ivec4 n1 = texelFetch(bvhBT, nodeIndex * 2 + 1);"
+"		vec3 minaabb = intBitsToFloat(n0.xyz);"
+"		vec3 maxaabb = intBitsToFloat(n1.xyz);"
+"		int triangleIndexOffset = n0.w;"
+"		int triCountAndSkip = n1.w;"
+
+"		bool isLeaf = triangleIndexOffset >= 0;"
+
+"		if(!isLeaf)"
+"		{"
+
+			//AABB Ray intersection 
+"			vec3 t1 = (minaabb - rayOrig) * rayDirInv;"
+"			vec3 t2 = (maxaabb - rayOrig) * rayDirInv;"
+"			float tmin = max(max(min(t1.x, t2.x), min(t1.y, t2.y)), min(t1.z, t2.z));"
+"			float tmax = min(min(max(t1.x, t2.x), max(t1.y, t2.y)), max(t1.z, t2.z));"
+"			bool raybox = tmax >= max(0.0f, tmin) && tmin < dist;"
+
+"			if(raybox)"
+"			{"
+"				stack[++stackPtr] = -triangleIndexOffset;" //add right child to stack
+"				stack[++stackPtr] = nodeIndex + 1;" //add left child to stack
+"			}"
+"		}"
+"		else"
+"		{"
+
+"			int tLen = triangleIndexOffset + triCountAndSkip;"
+"			for(int i = triangleIndexOffset; i < tLen; i++)"
+"			{"
+"				ivec4 tri = texelFetch(trianglesBT, i);"
+"				vec3 va = texelFetch(verticiesPosBT, tri.x).xyz;"
+"				vec3 e0 = texelFetch(verticiesPosBT, tri.y).xyz;"
+"				vec3 e1 = texelFetch(verticiesPosBT, tri.z).xyz;"
+
+				//Triangle Ray Intersection
+"				vec3 pv = cross(rayDir, e1);"
+"				float det = dot(e0, pv);"
+"				vec3 tv = rayOrig - va;"
+"				vec3 qv = cross(tv, e0);"
+"				hitTemp.xyz = vec3(dot(e1, qv), dot(tv, pv), dot(rayDir, qv)) / det;"
+"				hitTemp.w = hitTemp.x;"
+"				hitTemp.x = 1.0f - hitTemp.z - hitTemp.y;"
+"				bool triray = all(greaterThanEqual(hitTemp, vec4(0.0f, 0.0f, 0.0f, 0.0001f))) && hitTemp.w < dist;"
+
+"				if(triray)"
+"				{"
+"					dist = hitTemp.w;"
+"					triIndex = i;"
+"					hit = hitTemp;"
+"				}"
+"			}"
+"		}"
+"	}"
+"}"
+
+
+"void RayIntersectBVHExperemental(vec3 rayOrig, vec3 rayDir, out int triIndex, out vec4 hit)"
+"{"
+"	vec4 hitTemp;"
+"	vec3 rayDirInv = vec3(1.0f, 1.0f, 1.0f) / rayDir;"
+"	float dist = 1e10;"
+"	triIndex = -1;"
+"	int nodeIndex = 0;"
+"	for(nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++)"
+"	{"
+"		ivec4 n0 = texelFetch(bvhBT, nodeIndex * 2);"
+"		ivec4 n1 = texelFetch(bvhBT, nodeIndex * 2 + 1);"
+"		vec3 minaabb = intBitsToFloat(n0.xyz);"
+"		vec3 maxaabb = intBitsToFloat(n1.xyz);"
+"		int triangleIndexOffset = n0.w;"
+"		int triCountAndSkip = n1.w;"
+
+		//AABB Ray intersection 
+"		vec3 t1 = (minaabb - rayOrig) * rayDirInv;"
+"		vec3 t2 = (maxaabb - rayOrig) * rayDirInv;"
+"		float tmin = max(max(min(t1.x, t2.x), min(t1.y, t2.y)), min(t1.z, t2.z));"
+"		float tmax = min(min(max(t1.x, t2.x), max(t1.y, t2.y)), max(t1.z, t2.z));"
+"		bool raybox = tmax >= max(0.0f, tmin) && tmin < dist;"
+
+"		bool isLeaf = triangleIndexOffset >= 0;"
+"		int skipInx = isLeaf ? nodeIndex + 1 : triCountAndSkip;"
+
+"		if(raybox)"
+"		{"
+"			if(isLeaf)"
+"			{"
+
+"				int tLen = triangleIndexOffset + triCountAndSkip;"
+"				for(int i = triangleIndexOffset; i < tLen; i++)"
+"				{"
+"					ivec4 tri = texelFetch(trianglesBT, i);"
+"					vec3 va = texelFetch(verticiesPosBT, tri.x).xyz;"
+"					vec3 e0 = texelFetch(verticiesPosBT, tri.y).xyz;"
+"					vec3 e1 = texelFetch(verticiesPosBT, tri.z).xyz;"
+
+					//Triangle Ray Intersection
+"					vec3 pv = cross(rayDir, e1);"
+"					float det = dot(e0, pv);"
+"					vec3 tv = rayOrig - va;"
+"					vec3 qv = cross(tv, e0);"
+"					hitTemp.xyz = vec3(dot(e1, qv), dot(tv, pv), dot(rayDir, qv)) / det;"
+"					hitTemp.w = hitTemp.x;"
+"					hitTemp.x = 1.0f - hitTemp.z - hitTemp.y;"
+"					bool triray = all(greaterThanEqual(hitTemp, vec4(0.0f, 0.0f, 0.0f, 0.0001f))) && hitTemp.w < dist;"
+
+"					if(triray)"
+"					{"
+"						dist = hitTemp.w;"
+"						triIndex = i;"
+"						hit = hitTemp;"
+"					}"
+"				}"
+"			}"
+"		}"
+"		else"
+"		{"
+"			nodeIndex = skipInx - 1;"
+"		}"
+"	}"
+"}"
+
+
 "void RayIntersectBrute(vec3 rayOrig, vec3 rayDir, out int triIndex, out vec4 hit)"
 "{"
 "	float dist = 1e10;"
@@ -269,6 +411,7 @@ const std::string shaderSrc = ""
 "		vec3 e1 = texelFetch(verticiesPosBT, tri.z).xyz;"
 "		vec4 h;"
 
+		//Triangle Ray Intersection
 "		vec3 pv = cross(rayDir, e1);"
 "		float det = dot(e0, pv);"
 "		vec3 tv = rayOrig - va;"
@@ -387,7 +530,7 @@ const std::string shaderSrc = ""
 
 "	for(int i = 0; i < maxBounce; i++)"
 "	{"
-"		RayIntersectBVH(rayOrig, rayDir, triangleIndex, hit);"
+"		RayIntersectBVHStackBased(rayOrig, rayDir, triangleIndex, hit);"
 "		Triangle tri; "
 "		if(triangleIndex < 0)"
 "		{"
@@ -428,9 +571,6 @@ const std::string shaderSrc = ""
 "				ivec2 imgSize = imageSize(textures[mat.textureIndex.x]);"
 "				ivec2 pixelCoord = ivec2(uv0.x * imgSize.x, uv0.y * imgSize.y);"
 "				materialColor *= imageLoad(textures[mat.textureIndex.x], pixelCoord).xyz;"
-//"				ivec2 imgSize = imageSize(diffuseTex);"
-//"				ivec2 pixelCoord = ivec2(uv0.x * imgSize.x, uv0.y * imgSize.y);"
-//"				materialColor *= imageLoad(diffuseTex, pixelCoord).xyz;"
 "			}"
 
 "			vec3 newRayO = pos;"
@@ -446,7 +586,6 @@ const std::string shaderSrc = ""
 "			vec3 kd = (1.0f - ks) * (1.0f - materialMetallic);"
 
 "			vec3 reflectanceFactor = ((kd * materialColor / PI * max(0.0f, dot(newRayD, norm))) + specular) / (1.0f / (2.0f * PI));"
-//"			vec3 reflectanceFactor = (kd * materialColor / PI * max(0.0f, dot(newRayD, norm))) / (1.0f / (2.0f * PI));"//pure diffuse 
 
 "			finalColor += runningReflectanceFactor * materialEmittance;"
 

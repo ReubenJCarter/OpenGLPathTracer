@@ -160,6 +160,8 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 		}
 	}
 	
+	int lNodeNumber = 1;
+	
 	int nodeNumberBellow = 2;
 	
 	//Create BVHNode 0 and add to BVHNode list
@@ -170,7 +172,8 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 	nodes.push_back(bvhNode0);
 	
 	//Recurse on BVHNode 0 list 
-	nodeNumberBellow += GenNodesRecurse(nodes.size() - 1, depth + 1);
+	lNodeNumber += GenNodesRecurse(nodes.size() - 1, depth + 1);
+	nodeNumberBellow += lNodeNumber;
 	
 	//Create BVHNode 1 and add to list
 	BVHNode bvhNode1;
@@ -183,7 +186,7 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 	nodeNumberBellow += GenNodesRecurse(nodes.size() - 1, depth + 1);
 	
 	//parent is not leaf node so need to make triangleIndexOffset negative (later we will compute the actual inner node size)
-	nodes[parentIndex].triangleIndexOffset = -1;
+	nodes[parentIndex].triangleIndexOffset = -(parentIndex + lNodeNumber + 1);
 	
 	//the number of nodes under the parent (is increassed by 2 from the ones created in this function + all the sub nodes created(this function also returns the number))
 	nodes[parentIndex].skipIndexAndTriangleCount = parentIndex + nodeNumberBellow + 1;
@@ -200,11 +203,15 @@ BVH::BVH()
 
 void BVH::Build(std::vector<Triangle>& triangleList, std::vector<Vertex>& vertexList, int maxdepth)
 {
+	//
 	//init things...
+	//
 	maxDepth = maxdepth;
 	nodes.clear();
 	
+	//
 	//Create list of triangles and the AABB triangle ref for each 
+	//
 	triangleInfo.resize(triangleList.size());
 	for(int i = 0; i < triangleList.size(); i++)
 	{
