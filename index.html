@@ -1,16 +1,113 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+<link rel="stylesheet" type="text/css" href="web/css/slideReel.css">
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
+
+  <style>
+    /* Prevents slides from flashing */
+    #slides {
+      display:none;
+    }
+  </style>
+
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/slidesjs/3.0/jquery.slides.min.js"></script>
+
+  <script>
+    $(function(){
+      $("#slides").slidesjs({
+        width: 940,
+        height: 528
+      });
+    });
+  </script>
 
 <title>GPU Path Tracer</title>
 </head>
 <body>
 
 <h1>GPU Path Tracer</h1>
+
+<h2> Intro </h2>
+<p>
+
+The point of this project is mostly educational. A few years ago, when I was still at uni, I watched a demo video for Brigade 
+(Perhaps it was <a href="https://www.youtube.com/watch?v=BpT6MkCeP7Y" target="_blank">this<a/>).
+I was seriously impressed. I wanted to learn how systems such as octane and brigade actually work,
+this led me down a rather long and winding path which I am still on.
+For a day job I build systems to render billions of particles mostly from laser scan data which goes 
+into <a href="http://www.bbc.co.uk/programmes/p04pt0n7" target="_blank">TV shows</a>,<>VR Experences<> and the like.
+Most of this work is based on quite traditional game engine style particle systems, essentially rasterising loads 
+of little quads (lots of OpenGL and clever out of core data structures etc.) But not a lot of lighting!
+My aim with this project is to build a fast GPU based path tracing engine to learn how to simulate light and make
+photorealistic images really fast. I hope to document all of my findings here. 
+
+</p>
+
+<h2> Show Reel </h2>
+
+<div class="slideshow-container">
+  <div class="mySlides fade">
+    <img src="web/img/cornellBoxDiffuse.jpg" style="width:100%">
+    <div class="text">cornellBoxDiffuse</div>
+  </div>
+
+  <div class="mySlides fade">
+    <img src="web/img/dragon0Diffuse.jpg" style="width:100%">
+    <div class="text">dragon0Diffuse</div>
+  </div>
+
+  <div class="mySlides fade">
+    <img src="web/img/dragon1Diffuse.jpg" style="width:100%">
+    <div class="text">dragon1Diffuse</div>
+  </div>
+  
+  <div class="mySlides fade">
+    <img src="web/img/dragon2Diffuse.jpg" style="width:100%">
+    <div class="text">dragon2Diffuse</div>
+  </div>
+  
+  <div class="mySlides fade">
+    <img src="web/img/dragon3Diffuse.jpg" style="width:100%">
+    <div class="text">dragon3Diffuse</div>
+  </div>
+  
+  <div class="mySlides fade">
+    <img src="web/img/bunny0Gloss.jpg" style="width:100%">
+    <div class="text">bunny0Gloss</div>
+  </div>
+  
+  <div class="mySlides fade">
+    <img src="web/img/bunny1Gloss.jpg" style="width:100%">
+    <div class="text">bunny1Gloss</div>
+  </div>
+  
+  <div class="mySlides fade">
+    <img src="web/img/bunny2Gloss.jpg" style="width:100%">
+    <div class="text">bunny2Gloss</div>
+  </div>
+  
+  
+
+  <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+  <a class="next" onclick="plusSlides(1)">&#10095;</a>
+</div>
+<br>
+<div style="text-align:center">
+  <span class="dot" onclick="currentSlide(1)"></span> 
+  <span class="dot" onclick="currentSlide(2)"></span> 
+  <span class="dot" onclick="currentSlide(3)"></span> 
+  <span class="dot" onclick="currentSlide(4)"></span> 
+  <span class="dot" onclick="currentSlide(5)"></span> 
+  <span class="dot" onclick="currentSlide(6)"></span> 
+  <span class="dot" onclick="currentSlide(7)"></span> 
+  <span class="dot" onclick="currentSlide(8)"></span> 
+</div>
+
+<script src="web/js/slideReel.js"></script>
 
 <p>
 Test of Mathjax: $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
