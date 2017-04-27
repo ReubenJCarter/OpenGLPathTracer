@@ -112,29 +112,27 @@ photorealistic images really fast. I hope to document all of my findings here.
 <h2>Path Tracing</h2>
 <p>
 Path tracing is a technique which produces really stunning photorealistic images. It is basicly a simulation of light, if you consider light to be a lot of rays 
-emmited by a source, bouncing around some scene off surfaces with certain properties and then becoming incident on the photosensitive part of a camera or eye.
+emmited by a source, bouncing around a scene off surfaces with certain properties and then becoming incident on the photosensitive part of a camera or eye.
 This may not be a particulally accuate physical model for light, we know that light is wavelike under certain conditions, and certainly does not bounce around like
 a newtonian billiard ball. But for rendering images of everyday materials and scenes in a macroscopic world, its not bad.
 The briliant thing about path tracing is that all of the
 complex lighting effects (soft shadows AO DOF Caustics) are produced natrurally as a byproduct of simulating light. It's Incredably elligant,
-however it suffers from being extremaly computationally expensive, and has therfore been out of reach for anything realtime, and even most things non realtime for quite a while. 
-Even without any further more formal explination, it may be clear why path tracing is so expensive, for any standard scene there is an almost limitless quantity of 
-light rays bouncing around in limitless directions and bounces, to eventually excite a single pixel in the camera. 
-With other types of rendering, observable effects of light are each explicitly programmed into the system and can be quite unintuative, not based on anything physical, and generally suffer from large inacuracies. 
-This compromise is just for speed.
-
+however it suffers from being extremaly computationally expensive, and has been out of reach for anything realtime, and even most things non realtime for quite a while. 
+Even without any further explination, it may be clear why path tracing is so expensive, for any standard scene there is an almost limitless quantity of 
+light rays bouncing around in limitless directions and numbers of bounces, to eventually excite a single pixel in the camera. 
 
 </p>
 
+<p>
 rendering equation formal 
+
+$$L_o(\mathbf x,\omega_o) = L_e(\mathbf x,\omega_o) + \int_\Omega fr(\mathbf x,\omega_i,\omega_o)Li(\mathbf x, \omega_i)\omega_i\cdot n,d\omega_i$$
+</p>
 
 reverse directon ie cam rays start .
 
 montecarlo to solve
 
-<p>
-Test of Mathjax: $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
-</p>
 
 </body>
 </html>
