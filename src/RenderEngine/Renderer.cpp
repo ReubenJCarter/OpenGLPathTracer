@@ -253,7 +253,7 @@ const std::string shaderSrc = ""
 "	}"
 "}"
 
-
+"shared int stack[64];"
 "void RayIntersectBVHStackBased(vec3 rayOrig, vec3 rayDir, out int triIndex, out vec4 hit)"
 "{"
 "	vec4 hitTemp;"
@@ -261,7 +261,7 @@ const std::string shaderSrc = ""
 "	float dist = 1e10;"
 "	triIndex = -1;"
 "	int nodeIndex = 0;"
-"	int stack[64];"
+
 "	int stackPtr = 0;"
 "	stack[0] = 0;"
 
@@ -530,7 +530,7 @@ const std::string shaderSrc = ""
 
 "	for(int i = 0; i < maxBounce; i++)"
 "	{"
-"		RayIntersectBVHStackless(rayOrig, rayDir, triangleIndex, hit);"
+"		RayIntersectBVHStackBased(rayOrig, rayDir, triangleIndex, hit);"
 "		Triangle tri; "
 "		if(triangleIndex < 0)"
 "		{"

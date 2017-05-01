@@ -160,7 +160,7 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 		}
 	}
 	
-	int lNodeNumber = 1;
+	int lNodeNumber = 0;
 	
 	int nodeNumberBellow = 2;
 	
@@ -186,7 +186,7 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 	nodeNumberBellow += GenNodesRecurse(nodes.size() - 1, depth + 1);
 	
 	//parent is not leaf node so need to make triangleIndexOffset negative (later we will compute the actual inner node size)
-	nodes[parentIndex].triangleIndexOffset = -(parentIndex + lNodeNumber + 1);
+	nodes[parentIndex].triangleIndexOffset = -(parentIndex + lNodeNumber + 2);
 	
 	//the number of nodes under the parent (is increassed by 2 from the ones created in this function + all the sub nodes created(this function also returns the number))
 	nodes[parentIndex].skipIndexAndTriangleCount = parentIndex + nodeNumberBellow + 1;
