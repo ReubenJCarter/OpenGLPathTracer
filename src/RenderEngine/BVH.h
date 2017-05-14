@@ -45,6 +45,8 @@ class BVH
 		std::vector<TriangleInfo> triangleInfo;
 		int maxDepth;
 	
+		bool reverseOrder;
+		
 		int GenNodesRecurse(int parentIndex, int depth);
 		
 	public:

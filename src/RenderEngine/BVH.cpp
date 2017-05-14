@@ -160,15 +160,26 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 		}
 	}
 	
+	//reverseOrder = !reverseOrder;
+	
 	int lNodeNumber = 0;
 	
 	int nodeNumberBellow = 2;
 	
 	//Create BVHNode 0 and add to BVHNode list
 	BVHNode bvhNode0;
+	if(reverseOrder)
+	{
+	bvhNode0.aabb = splitAABB[1];
+	bvhNode0.triangleIndexOffset = nodes[parentIndex].triangleIndexOffset + splitIndex;
+	bvhNode0.skipIndexAndTriangleCount = splitCount[1];
+	}
+	else
+	{
 	bvhNode0.aabb = splitAABB[0];
 	bvhNode0.triangleIndexOffset = nodes[parentIndex].triangleIndexOffset;
-	bvhNode0.skipIndexAndTriangleCount = splitCount[0];
+	bvhNode0.skipIndexAndTriangleCount = splitCount[0];		
+	}
 	nodes.push_back(bvhNode0);
 	
 	//Recurse on BVHNode 0 list 
@@ -177,9 +188,18 @@ int BVH::GenNodesRecurse(int parentIndex, int depth)
 	
 	//Create BVHNode 1 and add to list
 	BVHNode bvhNode1;
+	if(reverseOrder)
+	{
+	bvhNode1.aabb = splitAABB[0];
+	bvhNode1.triangleIndexOffset = nodes[parentIndex].triangleIndexOffset;
+	bvhNode1.skipIndexAndTriangleCount = splitCount[0];
+	}
+	else
+	{
 	bvhNode1.aabb = splitAABB[1];
 	bvhNode1.triangleIndexOffset = nodes[parentIndex].triangleIndexOffset + splitIndex;
-	bvhNode1.skipIndexAndTriangleCount = splitCount[1];
+	bvhNode1.skipIndexAndTriangleCount = splitCount[1];		
+	}
 	nodes.push_back(bvhNode1);
 	
 	//Recurse on BVHNode 1 list
@@ -253,6 +273,7 @@ void BVH::Build(std::vector<Triangle>& triangleList, std::vector<Vertex>& vertex
 	nodes.push_back(bvhParent);
 	
 	//Run the recursive build function
+	reverseOrder = false;
 	GenNodesRecurse(0, 1);
 	
 	//sort the input triangle list to match the triangle referance list
