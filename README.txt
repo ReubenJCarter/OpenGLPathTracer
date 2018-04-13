@@ -1,3 +1,6 @@
 Simple Path tracing with PBR shading
 
-![bunny0Gloss](https://raw.githubusercontent.com/ReubenJCarter/OpenGLPathTracer/master/web/img/bunny0Gloss.jpg)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ReubenJCarter/OpenGLPathTracer/master/web/img/bunny0Gloss.jpg" width="350"/>
+</p>
